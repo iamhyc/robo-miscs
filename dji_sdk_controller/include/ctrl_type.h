@@ -1,4 +1,3 @@
-
 #ifndef __CTRL_TYPE_H__
 #define __CTRL_TYPE_H__
 
@@ -13,18 +12,27 @@
 # 0x05	PID parameter for Y, (kp, ki, kd)
 # 0x06	PID parameter for Z, (kp, ki, kd)
 */
-#define FLIGHT_LANDING  0x00
-#define FLIGHT_TAKEOFF  0x01
-#define FLIGHT_LANDING_REQUEST 0x02
-#define FLIGHT_TAKEOFF_REQUEST 0x03
+enum FlightStatus
+{
+    FLIGHT_LANDING,
+    FLIGHT_TAKEOFF,
+    FLIGHT_LANDING_REQUEST,
+    FLIGHT_TAKEOFF_REQUEST
+}FlightStatus;
 
-#define	DEST        0x01
-#define	VEL_LIM     0x02
-#define ERR_LIM     0x03
-#define	PID_X       0x04
-#define PID_Y       0x05
-#define	PID_Z       0x06
-#define LANDING     0x07
-#define TAKEOFF     0x08
+enum CtrlCmd
+{
+    DEST    	= 0x01,
+    VEL_LIM 	= 0x02,
+    ERR_LIM 	= 0x03,
+    PID_X_POS   = 0x04,
+    PID_X_VEL   = 0x05,
+    PID_Y_POS   = 0x06,
+    PID_Y_VEL   = 0x07,
+    PID_Z   	= 0x08,
+    LANDING 	= 0x09,
+    TAKEOFF 	= 0x0A
+}CtrlCmd;
+
 
 #endif

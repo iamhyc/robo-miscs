@@ -25,7 +25,8 @@
 
 static std::string cmd;
 
-dji_sdk_controller::flight_msg pid_x, pid_y, pid_z;
+dji_sdk_controller::flight_msg pid_px, pid_py, pid_z;
+dji_sdk_controller::flight_msg pid_vx, pid_vy;
 dji_sdk_controller::flight_msg dest, vel_limit, err_limit;
 
 
@@ -35,9 +36,11 @@ void disp_helper()
     std::cout << " =============================================== " <<std::endl;
     std::cout << "   [TAKEOFF] Takeoff                             " <<std::endl;
     std::cout << "   [L/Landing] Landing                           " <<std::endl;
-    std::cout << "   [PX] PID set for x-axis movement              " <<std::endl;
-    std::cout << "   [PY] PID set for x-axis movement              " <<std::endl;
-    std::cout << "   [PZ] PID set for x-axis movement              " <<std::endl;
+    std::cout << "   [XP] PID set for x-axis position             " <<std::endl;
+    std::cout << "   [YP] PID set for x-axis position             " <<std::endl;
+    std::cout << "   [PZ] PID set for x-axis position             " <<std::endl;
+    std::cout << "   [XV] PID set for x-axis velocity             " <<std::endl;
+    std::cout << "   [YV] PID set for x-axis velocity             " <<std::endl;
     std::cout << "   [D] Destination Coordinate Set                " <<std::endl;
     std::cout << "   [VEL] Velocity Limit Set for Translation      " <<std::endl;
     std::cout << "   [ERR] Location Limit Set for Translation      " <<std::endl;
@@ -59,8 +62,10 @@ void disp_param()
 
     std::cout << " Destination Point: ( " <<dest.data.x<<", " <<dest.data.y<<", " <<dest.data.z<<" )"<<std::endl;
 
-    std::cout << " PID set for X:\t{ " <<pid_x.data.x<<"\t" <<pid_x.data.y<<"\t" <<pid_x.data.z<<" }"<<std::endl;
-    std::cout << " PID set for Y:\t{ " <<pid_y.data.x<<"\t" <<pid_y.data.y<<"\t" <<pid_y.data.z<<" }"<<std::endl;
+    std::cout << " PID set for X POS:\t{ " <<pid_px.data.x<<"\t" <<pid_px.data.y<<"\t" <<pid_px.data.z<<" }"<<std::endl;
+    std::cout << " PID set for X VEL:\t{ " <<pid_vx.data.x<<"\t" <<pid_vx.data.y<<"\t" <<pid_vx.data.z<<" }"<<std::endl;
+    std::cout << " PID set for Y POS:\t{ " <<pid_py.data.x<<"\t" <<pid_py.data.y<<"\t" <<pid_py.data.z<<" }"<<std::endl;
+    std::cout << " PID set for Y VEL:\t{ " <<pid_vy.data.x<<"\t" <<pid_vy.data.y<<"\t" <<pid_vy.data.z<<" }"<<std::endl;
     std::cout << " PID set for Z:\t{ " <<pid_z.data.x<<"\t" <<pid_z.data.y<<"\t" <<pid_z.data.z<<" }"<<std::endl;
 
     std::cout << " Velocity limit:\t{ " <<vel_limit.data.x<<"\t" <<vel_limit.data.y<<"\t" <<vel_limit.data.z<<" }"<<std::endl;
@@ -70,9 +75,10 @@ void disp_param()
 
 void publishAll(const ros::Publisher &position_pub)
 {
-    position_pub.publish(pid_x);
-    position_pub.publish(pid_y);
-    position_pub.publish(pid_z);
+    position_pub.publish(pid_px); position_pub.publish(pid_py); position_pub.publish(pid_z);
+
+    position_pub.publish(pid_vx); position_pub.publish(pid_vy);
+
     position_pub.publish(vel_limit);
     position_pub.publish(err_limit);
     position_pub.publish(dest);
@@ -82,32 +88,41 @@ int loadFromFile(std::string file_name = "")
 {
     if(file_name.empty())
     {
-        file_name = "/home/ubuntu/flight_param.yml";
+        file_name = "/home/ubuntu/logFile/flight_new_param.yaml";
     }
 
-    try {
+    try{
         cv::FileStorage fs(file_name, cv::FileStorage::READ);
 
-        dest.data.x = fs["expect_x"]; dest.data.y = fs["expect_y"]; dest.data.z = fs["expect_z"];
+        auto itD = fs["DEST"].begin(), itV = fs["VEL_LIM"].begin(), itE = fs["ERR_LIM"].begin();
+        auto itX = fs["PID_X"].begin(), itY = fs["PID_Y"].begin(), itZ = fs["PID_Z"].begin();
+        //n.type() == FileNode::SEQ
 
-        pid_x.data.x = fs["pid_x_kp"]; pid_x.data.y = fs["pid_x_ki"]; pid_x.data.z = fs["pid_x_kd"];
-        pid_y.data.x = fs["pid_y_kp"]; pid_y.data.y = fs["pid_y_ki"]; pid_y.data.z = fs["pid_y_kd"];
-        pid_z.data.x = fs["pid_z_kp"]; pid_z.data.y = fs["pid_z_ki"]; pid_z.data.z = fs["pid_z_kd"];
+        dest.data.x = *(itD); dest.data.y = *(++itD); dest.data.z = *(++itD);
 
-        vel_limit.data.x = fs["x_limit"]; vel_limit.data.y = fs["y_limit"]; vel_limit.data.z = fs["z_limit"];
-        err_limit.data.x = fs["x_land"]; err_limit.data.y = fs["y_land"]; err_limit.data.z = fs["z_land"];
+        vel_limit.data.x = (float)(*itV); vel_limit.data.y = (float)(*++itV); vel_limit.data.z = (float)(*++itV);
 
-        return 0;
-    }
-    catch (...) {
-        return -1;
-    }
+        err_limit.data.x = (float)(*itE); err_limit.data.y = (float)(*++itE); err_limit.data.z = (float)(*++itE);
+
+
+        pid_px.data.x = (float)(*itX); pid_px.data.y = (float)(*++itX); pid_px.data.z = (float)(*++itX);
+        pid_vx.data.x = (float)(*++itX); pid_vx.data.y = (float)(*++itX); pid_vx.data.z = (float)(*++itX);
+
+        pid_py.data.x = (float)(*itY); pid_py.data.y = (float)(*++itY); pid_py.data.z = (float)(*++itY);
+        pid_vy.data.x = (float)(*++itY); pid_vy.data.y = (float)(*++itY); pid_vy.data.z = (float)(*++itY);
+
+        pid_z.data.x = (float)(*itZ); pid_z.data.y = (float)(*++itZ); pid_z.data.z = (float)(*++itZ);
+        }
+        catch (...) {
+            return -1;
+        }
 
 }
 
 int writeToFile(std::string file_name = "")
 {
-    if(file_name.empty())
+    return -1;
+    /*if(file_name.empty())
     {
         file_name = "/home/ubuntu/flight_param.yml";
     }
@@ -128,7 +143,7 @@ int writeToFile(std::string file_name = "")
     }
     catch (...) {
         return -1;
-    }
+    }*/
 
 }
 
@@ -156,8 +171,8 @@ void param_reset(const ros::Publisher &position_pub, int type)
 
 void controller_init()
 {
-    pid_x.type = PID_X;
-    pid_y.type = PID_Y;
+    pid_px.type = PID_X_POS;    pid_vx.type = PID_X_VEL;
+    pid_py.type = PID_Y_POS;    pid_vy.type = PID_Y_VEL;
     pid_z.type = PID_Z;
 
     dest.type = DEST;
@@ -196,17 +211,29 @@ int main(int argc, char *argv[])
             msg.type = TAKEOFF;
             msg.data.x=0; msg.data.y=0; msg.data.z=0;
         }
-        else if (cmd.compare("PX") == 0)             //0x04
+        else if (cmd.compare("XP") == 0)             //0x04
         {
             std::cin >> msg.data.x >> msg.data.y >> msg.data.z;
-            msg.type = PID_X;
-            pid_x.data = msg.data;
+            msg.type = PID_X_POS;
+            pid_px.data = msg.data;
         }
-        else if(cmd.compare("PY") == 0)         //0x05
+        else if(cmd.compare("YP") == 0)         //0x05
         {
             std::cin >> msg.data.x >> msg.data.y >> msg.data.z;
-            msg.type = PID_Y;
-            pid_y.data = msg.data;
+            msg.type = PID_Y_POS;
+            pid_py.data = msg.data;
+        }
+        else if (cmd.compare("XV") == 0)             //0x04
+        {
+            std::cin >> msg.data.x >> msg.data.y >> msg.data.z;
+            msg.type = PID_X_VEL;
+            pid_vx.data = msg.data;
+        }
+        else if(cmd.compare("YV") == 0)         //0x05
+        {
+            std::cin >> msg.data.x >> msg.data.y >> msg.data.z;
+            msg.type = PID_Y_VEL;
+            pid_vy.data = msg.data;
         }
         else if(cmd.compare("PZ") == 0)         //0x06
         {

@@ -47,28 +47,46 @@ void genVector3Msg(std::stringstream& msg, std::string pre, \
 }
 
 void LoadParamFile(CtrlType::Vector3& expect, \
-                CtrlType::pid_T& pid_x, CtrlType::pid_T& pid_y, CtrlType::pid_T& pid_z, bool resetPID)
+                CtrlType::dpid_T &pid_x, CtrlType::dpid_T& pid_y, CtrlType::pid_T &pid_z, bool resetPID)
 {
 
     try{
-        cv::FileStorage fs(stringCat(LOGFILE_ROOT, "flight_param.yml"), cv::FileStorage::READ);
+        cv::FileStorage fs(stringCat(LOGFILE_ROOT, "flight_new_param.yaml"), cv::FileStorage::READ);
+        std::cout << stringCat(LOGFILE_ROOT, "flight_new_param.yaml") << std::endl;
 
         auto itD = fs["DEST"].begin(), itV = fs["VEL_LIM"].begin(), itE = fs["ERR_LIM"].begin();
         auto itX = fs["PID_X"].begin(), itY = fs["PID_Y"].begin(), itZ = fs["PID_Z"].begin();
         //n.type() == FileNode::SEQ
 
         expect.x = *(itD); expect.y = *(++itD); expect.z = *(++itD);
-        pid_x.vel_lim = *(itV); pid_y.vel_lim = *(++itV); pid_z.vel_lim = *(++itV);
-        pid_x.err_lim = *(itE); pid_y.err_lim = *(++itE); pid_z.err_lim = *(++itE);
+        pid_x.pos_loop.vel_lim = (float)(*itV); pid_y.pos_loop.vel_lim = (float)(*++itV); pid_z.vel_lim = (float)(*++itV);
+        pid_x.pos_loop.err_lim = (float)(*itE); pid_y.pos_loop.err_lim = (float)(*++itE); pid_z.err_lim = (float)(*++itE);
 
         if(resetPID == PID_RESET)
         {
-            pid_x.kp = *(itX); pid_x.ki = *(++itX); pid_x.kd = *(++itX);
-            pid_y.kp = *(itY); pid_y.ki = *(++itY); pid_y.kd = *(++itY);
-            pid_z.kp = *(itZ); pid_z.ki = *(++itZ); pid_z.kd = *(++itZ);
+            pid_x.pos_loop.kp = (float)(*itX); pid_x.pos_loop.ki = (float)(*++itX); pid_x.pos_loop.kd = (float)(*++itX);
+            pid_x.vel_loop.kp = (float)(*++itX); pid_x.vel_loop.ki = (float)(*++itX); pid_x.vel_loop.kd = (float)(*++itX);
+
+            pid_y.pos_loop.kp = (float)(*itY); pid_y.pos_loop.ki = (float)(*++itY); pid_y.pos_loop.kd = (float)(*++itY);
+            pid_y.vel_loop.kp = (float)(*++itY); pid_y.vel_loop.ki = (float)(*++itY); pid_y.vel_loop.kd = (float)(*++itY);
+
+            pid_z.kp = (float)(*itZ); pid_z.ki = (float)(*++itZ); pid_z.kd = (float)(*++itZ);
         }
+
+        std::stringstream tmp;
+        genVector3Msg(tmp, "PID_X_pos", pid_x.pos_loop.kp, pid_x.pos_loop.ki, pid_x.pos_loop.kd); tmp << std::endl;
+        genVector3Msg(tmp, "PID_X_vel", pid_x.vel_loop.kp, pid_x.vel_loop.ki, pid_x.vel_loop.kd); tmp << std::endl;
+
+        genVector3Msg(tmp, "PID_Y_pos", pid_y.pos_loop.kp, pid_y.pos_loop.ki, pid_y.pos_loop.kd); tmp << std::endl;
+        genVector3Msg(tmp, "PID_Y_vel", pid_y.vel_loop.kp, pid_y.vel_loop.ki, pid_y.vel_loop.kd); tmp << std::endl;
+
+        genVector3Msg(tmp, "PID_Z", pid_z.kp, pid_z.ki, pid_z.kd);
+
+        std::cout << tmp.str() << std::endl;
+        std::cout << "Successful" <<std::endl;
     }
     catch (...) {
+        std::cout << "hahahahahah" <<std::endl;
         return;
     }
 

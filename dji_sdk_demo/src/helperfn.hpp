@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include "pid_set.h"
 
-#define LOGFILE_ROOT	"/home/ubuntu/logFile"
+#define LOGFILE_ROOT	"/home/ubuntu/logFile/"
 #define GUIDANCE_MSG	0x01
 #define RC_MSG			0x02
 #define CLIENT_MSG		0x03
@@ -28,6 +28,6 @@ void resetLogFileAll(void);
 void logToFile(const std::stringstream& msg, int type);
 
 void LoadParamFile(CtrlType::Vector3& expect, \
-                CtrlType::pid_T& pid_x, CtrlType::pid_T& pid_y, CtrlType::pid_T& pid_z, bool resetPID);
+                CtrlType::dpid_T& pid_x, CtrlType::dpid_T &pid_y, CtrlType::pid_T &pid_z, bool resetPID);
 
 #endif

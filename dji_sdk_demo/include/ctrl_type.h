@@ -1,4 +1,3 @@
-
 #ifndef __CTRL_TYPE_H__
 #define __CTRL_TYPE_H__
 
@@ -23,14 +22,16 @@ enum FlightStatus
 
 enum CtrlCmd
 {
-    DEST    = 0x01,
-    VEL_LIM = 0x02,
-    ERR_LIM = 0x03,
-    PID_X   = 0x04,
-    PID_Y   = 0x05,
-    PID_Z   = 0x06,
-    LANDING = 0x07,
-    TAKEOFF = 0x08
+    DEST    	= 0x01,
+    VEL_LIM 	= 0x02,
+    ERR_LIM 	= 0x03,
+    PID_X_POS   = 0x04,
+    PID_X_VEL   = 0x05,
+    PID_Y_POS   = 0x06,
+    PID_Y_VEL   = 0x07,
+    PID_Z   	= 0x08,
+    LANDING 	= 0x09,
+    TAKEOFF 	= 0x0A
 }CtrlCmd;
 
 
