@@ -1,6 +1,14 @@
 
 #include "judge_system.h"
 
+//static definition
+static tGameInfo *GameInfo = {0};
+static tLocData *LocData = {0};//independent from *GameInfo
+
+//Serial receiving part
+
+
+
 //crc8 generator polynomial:G(x)=x8+x5+x4+1
 const unsigned char CRC8_INIT = 0xff;
 const unsigned char CRC8_TAB[256] =
@@ -22,6 +30,8 @@ const unsigned char CRC8_TAB[256] =
 	0xe9,0xb7,0x55,0x0b,0x88,0xd6,0x34,0x6a,0x2b,0x75,0x97,0xc9,0x4a,0x14,0xf6,0xa8,
 	0x74,0x2a,0xc8,0x96,0x15,0x4b,0xa9,0xf7,0xb6,0xe8,0x0a,0x54,0xd7,0x89,0x6b,0x35,
 };
+
+uint16_t CRC_INIT = 0xffff;
 const uint16_t wCRC_Table[256] =
 {
 	0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -58,7 +68,6 @@ const uint16_t wCRC_Table[256] =
 	0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78
 };
 
-uint16_t CRC_INIT = 0xffff;
 
 unsigned char Get_CRC8_Check_Sum(unsigned char *pchMessage,unsigned int dwLength,unsigned
 char ucCRC8)
@@ -107,19 +116,20 @@ void Append_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength)
 */
 uint16_t Get_CRC16_Check_Sum(uint8_t *pchMessage,uint32_t dwLength,uint16_t wCRC)
 {
-Uint8_t chData;
-if (pchMessage == NULL)
-{
-return 0xFFFF;
+	Uint8_t chData;
+	if (pchMessage == NULL)
+	{
+		return 0xFFFF;
+	}
+
+	while(dwLength--)
+	{
+		chData = *pchMessage++;
+		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ wCRC_Table[((uint16_t)(wCRC) ^ (uint16_t)(chData)) & 0x00ff];
+	}
+	return wCRC;
 }
-while(dwLength--)
-{
-chData = *pchMessage++;
-(wCRC) = ((uint16_t)(wCRC) >> 8) ^ wCRC_Table[((uint16_t)(wCRC) ^ (uint16_t)(chData)) &
-0x00ff];
-}
-return wCRC;
-}
+
 /*
 ** Descriptions: CRC16 Verify function
 ** Input: Data to Verify,Stream length = Data + checksum
