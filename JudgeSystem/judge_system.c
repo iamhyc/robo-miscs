@@ -2,12 +2,17 @@
 #include "judge_system.h"
 
 //static definition
+static uint8_t js_tmpData, *js_frameData;
 static tGameInfo *GameInfo = {0};
 static tLocData *LocData = {0};//independent from *GameInfo
 
 //Serial receiving part
-
-
+void frame_recv()
+{
+	js_tmpData = 
+	HAL_USART_Receive(husart_js, uint8_t * pRxData, uint16_t Size, uint32_t Timeout)
+	HAL_USART_Receive_IT (husart_js, uint8_t * pRxData, uint16_t Size);
+}
 
 //crc8 generator polynomial:G(x)=x8+x5+x4+1
 const unsigned char CRC8_INIT = 0xff;

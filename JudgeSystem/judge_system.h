@@ -4,39 +4,67 @@
 /**
  * def&var Area
 **/
-#define	BYTE_SIZE			4
+#define	BYTE_SIZE				4//4-bit
+#define FLAOT_SIZE				4//4-byte
+#define FRAME_HEADER_SIZE		5//5-byte
+#define FRAME_CMD_SIZE			2
+#define	FRAME_TAIL_SIZE			2//CRC16
 
-#define FRAME_HEADER_SIZE	20//5-byte
-#define FRAME_SOF			0xA5
-#define FRAME_SEQ_SIZE		8//2-byte
-#define	FRAME_CRC8_SIZE		8//2-byte
-#define FRAME_CMD_SIZE		8//2-byte
-#define	FRAME_TAIL_SIZE		16//4-byte, CRC16
+#define FRAME_SOF				0xA5
+#define FRAME_DATALEN_SIZE		1
+#define FRAME_DATALEN_OFFSET	1
+#define FRAME_SEQ_SIZE			2
+#define FRAME_SEQ_OFFSET		3
+#define	FRAME_CRC8_SIZE			1
+#define	FRAME_CRC8_OFFSET		4
 
-#define	CMD_PROCESS_INFO	0x0001
-#define	CMD_HITTING_INFO	0x0002
-#define	CMD_SHOTING_INFO	0x0003
-#define CMD_CUSTOM_INFO		0x0005
+#define PROC_REMAIN_TIME_OFFSET		0
+#define PROC_REMAIN_BLOOD_OFFSET	4
+#define PROC_REAL_VOLTAGE_OFFSET	6
+#define PROC_REAL_CURRENT_OFFSET	10
+#define PROC_LOCATION_OFFSET		14
+#define PROC_REMAIN_POWER_OFFSET	27
 
-#define ARMOR_FRONT			0x00
-#define ARMOR_LEFT			0x01
-#define ARMOR_REAR			0x02
-#define ARMOR_RIGHT			0x03
-#define ARMOR_UPt01			0x04
-#define ARMOR_UPt02			0x05
+#define	CMD_PROCESS_INFO		0x0001
+#define	CMD_HITTING_INFO		0x0002
+#define	CMD_SHOTING_INFO		0x0003
+#define CMD_CUSTOM_INFO			0x0005
 
-#define	BLOOD_DEC_DAMAGE	0x0
-#define	BLOOD_DEC_BULLETSPD	0x1
-#define	BLOOD_DEC_BULLETFRQ	0x2
-#define	BLOOD_DEC_POWEROVER	0x3
-#define	BLOOD_DEC_OFFLINE	0x4
-#define	BLOOD_DEC_RULEBREAK	0x6
-#define	BLOOD_INC_LIFTAREA	0xa
-#define	BLOOD_INC_ENGINEER	0xb
+#define	CMD_PROCESS_INFOSIZE	31//31-byte
+#define	CMD_HITTING_INFOSIZE	3
+#define	CMD_SHOTING_INFOSIZE	16
+#define CMD_CUSTOM_INFOSIZE		12
+
+#define ARMOR_FRONT				0x00
+#define ARMOR_LEFT				0x01
+#define ARMOR_REAR				0x02
+#define ARMOR_RIGHT				0x03
+#define ARMOR_UPt01				0x04
+#define ARMOR_UPt02				0x05
+
+#define	BLOOD_DEC_DAMAGE		0x0
+#define	BLOOD_DEC_BULLETSPD		0x1
+#define	BLOOD_DEC_BULLETFRQ		0x2
+#define	BLOOD_DEC_POWEROVER		0x3
+#define	BLOOD_DEC_OFFLINE		0x4
+#define	BLOOD_DEC_RULEBREAK		0x6
+#define	BLOOD_INC_LIFTAREA		0xa
+#define	BLOOD_INC_ENGINEER		0xb
+
+USART_HandleTypeDef * husart_js;
 
 /**
  * Structure Area
 **/
+typedef struct
+{
+	uint16_t SOF;
+	uint8_t header[3];
+	float data1;
+	float data2;
+	float data3;
+}tFrameData;
+
 typedef __packed struct
 {
 	uint8_t flag;//usablity
@@ -77,7 +105,6 @@ typedef __packed struct
 	float data2;
 	float data3;
 }tCustomData;//maximum to 200Hz
-
 
 /**
  * Function Area
