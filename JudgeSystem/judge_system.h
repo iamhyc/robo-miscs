@@ -6,7 +6,10 @@
 **/
 #define	BYTE_SIZE				4//4-bit
 #define FLAOT_SIZE				4//4-byte
-#define FRAME_HEADER_SIZE		5//5-byte
+#define 
+
+#define FRAME_SOF_SIZE			2//2-byte
+#define FRAME_HEADER_SIZE		3//3-byte
 #define FRAME_CMD_SIZE			2
 #define	FRAME_TAIL_SIZE			2//CRC16
 
@@ -51,14 +54,15 @@
 #define	BLOOD_INC_LIFTAREA		0xa
 #define	BLOOD_INC_ENGINEER		0xb
 
-USART_HandleTypeDef * husart_js;
+USART_HandleTypeDef husart_js;
+tFrameData JS_FrameData;
 
 /**
  * Structure Area
 **/
 typedef struct
 {
-	uint8_t header[4];
+	uint8_t flag;//state: from 0 to 2
 	uint8_t header[4];
 	uint8_t CmdID[2];
 	uint8_t *data;
@@ -117,6 +121,9 @@ typedef __packed struct
 /**
  * Function Area
 **/
+uint8_t JSystem_Receving_Start(void);
+uint8_t JSystem_Receving_Stop(void);
+
 unsigned int Verify_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength);
 void Append_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength);
 

@@ -2,16 +2,47 @@
 #include "judge_system.h"
 
 //static definition
-static uint8_t js_tmpData, *js_frameData;
+static uint8_t js_RxData[40];
+tFrameHeader *FrameHeader = {0};
 static tGameInfo *GameInfo = {0};
 static tLocData *LocData = {0};//independent from *GameInfo
 
 //Serial receiving part
-void frame_recv()
+void FrameRecv_IRQHandler(assume aIRQHandler)
+{ 
+	//HAL_USART_Receive_IT (husart_js, uint8_t * pRxData, uint16_t Size);
+	switch(JS_FrameData.flag)
+	{
+		case 0:
+			memcopy(, js_RxData, FRAME_SOF_SIZE);
+			HAL_USART_Receive_IT(husart_js, 
+								js_RxData, 
+								FRAME_SOF_SIZE);
+		break;
+		case 1:
+			HAL_USART_Receive_IT(husart_js, 
+								js_RxData + FRAME_SOF_OFFSET, 
+								FRAME_HEADER_SIZE);
+		break;
+		case 2:
+			HAL_USART_Receive_IT(husart_js, 
+								js_RxData + FRAME_HEADER_OFFSET, 
+								FRAME_CMD_SIZE + FRAME_TAIL_SIZE);
+		break;
+		default:
+			JS_FrameData.flag = 0;
+		break;
+	}
+}
+
+uint8_t JSystem_Receving_Start(void)
 {
-	js_tmpData = 
-	HAL_USART_Receive(husart_js, uint8_t * pRxData, uint16_t Size, uint32_t Timeout)
-	HAL_USART_Receive_IT (husart_js, uint8_t * pRxData, uint16_t Size);
+	return HAL_USART_Receive_IT(&husart_js, js_RxTmpData, FRAME_SOF_SIZE);
+}
+uint8_t JSystem_Receving_Stop(void)
+{
+	JS_FrameData = {0};
+	return HAL_USART_Abort_IT(&husart_js);
 }
 
 //crc8 generator polynomial:G(x)=x8+x5+x4+1
