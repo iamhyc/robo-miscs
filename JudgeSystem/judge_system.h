@@ -11,11 +11,11 @@
 #define	FRAME_TAIL_SIZE			2//CRC16
 
 #define FRAME_SOF				0xA5
-#define FRAME_DATALEN_SIZE		1
-#define FRAME_DATALEN_OFFSET	1
-#define FRAME_SEQ_SIZE			2
-#define FRAME_SEQ_OFFSET		3
+#define FRAME_DATALEN_SIZE		2
+#define FRAME_SEQ_SIZE			1
 #define	FRAME_CRC8_SIZE			1
+#define FRAME_DATALEN_OFFSET	1//offset
+#define FRAME_SEQ_OFFSET		3
 #define	FRAME_CRC8_OFFSET		4
 
 #define PROC_REMAIN_TIME_OFFSET		0
@@ -58,12 +58,20 @@ USART_HandleTypeDef * husart_js;
 **/
 typedef struct
 {
-	uint16_t SOF;
-	uint8_t header[3];
-	float data1;
-	float data2;
-	float data3;
+	uint8_t header[4];
+	uint8_t header[4];
+	uint8_t CmdID[2];
+	uint8_t *data;
+	//uint8_t CRC8;
+	//uint8_t tail[2];//CRC16
 }tFrameData;
+
+typedef struct
+{
+	uint8_t SOF;
+	uint8_t SEQ;
+	uint16_t data_len;
+}tFrameHeader;
 
 typedef __packed struct
 {
