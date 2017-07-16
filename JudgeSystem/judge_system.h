@@ -6,37 +6,40 @@
 **/
 #define	BYTE_SIZE				4//4-bit
 #define FLAOT_SIZE				4//4-byte
-#define 
+#define tRxSOFData 				uint8_t//CRC8
+#define tRxTailData				uint16_t//CRC16
 
-#define FRAME_SOF_SIZE			2//2-byte
-#define FRAME_HEADER_SIZE		3//3-byte
-#define FRAME_CMD_SIZE			2
-#define	FRAME_TAIL_SIZE			2//CRC16
+#define FRAME_SOF_SIZE			1//1-byte
+#define FRAME_CONTROL_SIZE		6//6-byte
+#define FRAME_CONTROL_OFFSET	1//1-byte
+#define FRAME_DATA_OFFSET		8//8-byte
+//#define	FRAME_TAIL_SIZE			2//CRC16
 
 #define FRAME_SOF				0xA5
-#define FRAME_DATALEN_SIZE		2
+/*#define FRAME_DATALEN_SIZE		2
 #define FRAME_SEQ_SIZE			1
 #define	FRAME_CRC8_SIZE			1
 #define FRAME_DATALEN_OFFSET	1//offset
 #define FRAME_SEQ_OFFSET		3
-#define	FRAME_CRC8_OFFSET		4
+#define	FRAME_CRC8_OFFSET		4*/
 
-#define PROC_REMAIN_TIME_OFFSET		0
+/*#define PROC_REMAIN_TIME_OFFSET		0
 #define PROC_REMAIN_BLOOD_OFFSET	4
 #define PROC_REAL_VOLTAGE_OFFSET	6
 #define PROC_REAL_CURRENT_OFFSET	10
 #define PROC_LOCATION_OFFSET		14
-#define PROC_REMAIN_POWER_OFFSET	27
+#define PROC_REMAIN_POWER_OFFSET	27*/
 
 #define	CMD_PROCESS_INFO		0x0001
 #define	CMD_HITTING_INFO		0x0002
-#define	CMD_SHOTING_INFO		0x0003
+#define	CMD_SHOOTING_INFO		0x0003
 #define CMD_CUSTOM_INFO			0x0005
 
-#define	CMD_PROCESS_INFOSIZE	31//31-byte
-#define	CMD_HITTING_INFOSIZE	3
-#define	CMD_SHOTING_INFOSIZE	16
-#define CMD_CUSTOM_INFOSIZE		12
+#define	CMD_FRAME_SIZE(SIZE)	SIZE+FRAME_CONTROL_SIZE+3 //31-byte
+#define	CMD_PROCESS_INFO_SIZE	31//31-byte
+#define	CMD_HITTING_INFO_SIZE	3
+#define	CMD_SHOOTING_INFO_SIZE	16
+#define CMD_CUSTOM_INFO_SIZE		12
 
 #define ARMOR_FRONT				0x00
 #define ARMOR_LEFT				0x01
@@ -55,27 +58,18 @@
 #define	BLOOD_INC_ENGINEER		0xb
 
 USART_HandleTypeDef husart_js;
-tFrameData JS_FrameData;
+uint8_t RxStatus, RxUpdated;
 
 /**
  * Structure Area
 **/
-typedef struct
+typedef __packed struct
 {
-	uint8_t flag;//state: from 0 to 2
-	uint8_t header[4];
-	uint8_t CmdID[2];
-	uint8_t *data;
-	//uint8_t CRC8;
-	//uint8_t tail[2];//CRC16
-}tFrameData;
-
-typedef struct
-{
-	uint8_t SOF;
-	uint8_t SEQ;
 	uint16_t data_len;
-}tFrameHeader;
+	uint8_t SEQ;
+	uint8_t CRC8;
+	uint16_t CmdID;
+}tControlData;
 
 typedef __packed struct
 {
@@ -123,6 +117,9 @@ typedef __packed struct
 **/
 uint8_t JSystem_Receving_Start(void);
 uint8_t JSystem_Receving_Stop(void);
+
+void JSystem_GameInfo_Read(tGameInfo *);
+void JSystem_LocData_Read(tLocData *);
 
 unsigned int Verify_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength);
 void Append_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength);

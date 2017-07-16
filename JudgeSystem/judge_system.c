@@ -2,45 +2,126 @@
 #include "judge_system.h"
 
 //static definition
-static uint8_t js_RxData[40];
-tFrameHeader *FrameHeader = {0};
-static tGameInfo *GameInfo = {0};
-static tLocData *LocData = {0};//independent from *GameInfo
+static uint8_t RxFrameData[45];
+
+static tRxSOFData *RxSOFData = 0;
+static tControlData *RxControlData = {0};
+static tGameInfo *RxGameInfo = {0};
+//static tRealBloodChangedData *RxBloodData = {0};
+//static tRealShootData *RxShootData = {0};
+//static tCustomData *RxCustomData = {0};
 
 //Serial receiving part
 void FrameRecv_IRQHandler(assume aIRQHandler)
 { 
 	//HAL_USART_Receive_IT (husart_js, uint8_t * pRxData, uint16_t Size);
-	switch(JS_FrameData.flag)
+	switch(RxStatus)
 	{
 		case 0:
-			memcopy(, js_RxData, FRAME_SOF_SIZE);
-			HAL_USART_Receive_IT(husart_js, 
-								js_RxData, 
-								FRAME_SOF_SIZE);
+			memcpy(RxFrameData, RxSOFData, FRAME_SOF_SIZE);
+			if(RxSOFData != FrameSOF)
+			{
+				StartSOFReceiving();
+				break;
+			}
+			else
+			{
+				RxStatus++;
+				StartControlReceiving();
+				break;
+			}
 		break;
 		case 1:
-			HAL_USART_Receive_IT(husart_js, 
-								js_RxData + FRAME_SOF_OFFSET, 
-								FRAME_HEADER_SIZE);
+			memcpy(RxFrameData + FRAME_CONTROL_SIZE, 
+					RxControlData, 
+					FRAME_CONTROL_SIZE);
+			if(Verify_CRC8_Check_Sum(RxFrameData, 5) && RxControlData.CmdID==CMD_PROCESS_INFO)
+			{
+				RxStatus ++;
+				StartDataReceiving();
+				break;
+			}
+			else{
+				RxStatus = 0;
+				StartSOFReceiving;
+				break;
+			}
 		break;
 		case 2:
-			HAL_USART_Receive_IT(husart_js, 
-								js_RxData + FRAME_HEADER_OFFSET, 
-								FRAME_CMD_SIZE + FRAME_TAIL_SIZE);
+			memcpy(RxFrameData + FRAME_DATA_OFFSET, 
+				RxGameInfo, 
+				CMD_PROCESS_INFO_SIZE + FRAME_TAIL_SIZE);
+			if(Verify_CRC16_Check_Sum(RxFrameData, CMD_FRAME_SIZE(CMD_PROCESS_INFO_SIZE))
+			{
+				RxUpdated = 1;
+			}
+			RxStauts = 0;
+			StartSOFReceiving();
 		break;
 		default:
-			JS_FrameData.flag = 0;
+			RxStatus = 0;
+		break;
+	}//Switch RxStatus
+}
+
+void JSystem_GameInfo_Read(tGameInfo * GameInfo)
+{
+	memcpy(RxGameInfo, GameInfo, sizeof(tGameInfo));
+}
+
+void JSystem_LocData_Read(tLocData * locData)
+{
+	memcpy();
+}
+
+uint8_t StartSOFReceiving()
+{
+	return HAL_USART_Receive_IT(husart_js, 
+								RxFrameData, 
+								FRAME_SOF_SIZE);
+}
+
+uint8_t StartControlReceiving()
+{
+	return HAL_USART_Receive_IT(husart_js, 
+								RxFrameData + FRAME_CONTROL_OFFSET, 
+								FRAME_CONTROL_SIZE);
+}
+
+uint8_t StartDataReceiving()
+{
+	uint8_t FrameSize;
+	switch(RxControlData)
+	{
+		case CMD_PROCESS_INFO:
+			FrameSize = CMD_PROCESS_INFO_SIZE;
+		break;
+		case CMD_HITTING_INFO:
+			FrameSize = CMD_HITTING_INFO_SIZE;
+		break;
+		case CMD_SHOOTING_INFO:
+			FrameSize = CMD_SHOOTING_INFO_SIZE;
+		break;
+		case CMD_CUSTOM_INFO:
+			FrameSize = CMD_CUSTOM_INFO_SIZE;
+		break;
+		default:
 		break;
 	}
+	return HAL_USART_Receive_IT(husart_js, 
+								RxFrameData + FRAME_DATA_OFFSET, 
+								FrameSize + FRAME_TAIL_SIZE);
 }
 
 uint8_t JSystem_Receving_Start(void)
 {
+	RxStatus = 0;
 	return HAL_USART_Receive_IT(&husart_js, js_RxTmpData, FRAME_SOF_SIZE);
 }
+
 uint8_t JSystem_Receving_Stop(void)
 {
+	RxStatus = -1;
 	JS_FrameData = {0};
 	return HAL_USART_Abort_IT(&husart_js);
 }
