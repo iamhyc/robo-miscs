@@ -2,4 +2,8 @@ RM_ROS/auto_car/tags
 RM_ROS/auto_car/devel/
 RM_ROS/auto_car/build/
 RM_ROS/rune_detect/
+RM_ROS/test_package/devel
+RM_ROS/test_package/build
+*/build
+*/devel
 tags
