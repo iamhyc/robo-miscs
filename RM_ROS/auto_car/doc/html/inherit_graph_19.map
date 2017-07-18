@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classMissionMode.html" title="There are three missions of the autocar: point state, patrol state, shooting state. and the autocar also have three state: OBTAINED_GOAL_STATE, BUSY_STATE, IDLE_STATE. " alt="" coords="5,56,104,83"/>
+<area shape="rect" id="node2" href="$classPatrolMode.html" title="PatrolMode" alt="" coords="161,5,249,32"/>
+<area shape="rect" id="node3" href="$classPointMode.html" title="PointMode" alt="" coords="163,56,247,83"/>
+<area shape="rect" id="node4" href="$classShootingMode.html" title="ShootingMode" alt="" coords="152,107,257,133"/>
+</map>

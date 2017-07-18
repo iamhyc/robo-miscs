@@ -1,0 +1,4 @@
+var structros_1_1serialization_1_1Serializer_3_01_1_1odometry_1_1car__speed___3_01ContainerAllocator_01_4_01_4 =
+[
+    [ "ROS_DECLARE_ALLINONE_SERIALIZER", "structros_1_1serialization_1_1Serializer_3_01_1_1odometry_1_1car__speed___3_01ContainerAllocator_01_4_01_4.html#ac65838babb34e950e2856137c6008e5d", null ]
+];
