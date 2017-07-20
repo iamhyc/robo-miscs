@@ -12,14 +12,14 @@ try:
     from catkin.environment_cache import generate_environment_script
 except ImportError:
     # search for catkin package in all workspaces and prepend to path
-    for workspace in "/opt/ros/kinetic".split(';'):
+    for workspace in "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel;/home/team5/catkin_ws/devel;/opt/ros/kinetic".split(';'):
         python_path = os.path.join(workspace, 'lib/python2.7/dist-packages')
         if os.path.isdir(os.path.join(python_path, 'catkin')):
             sys.path.insert(0, python_path)
             break
     from catkin.environment_cache import generate_environment_script
 
-code = generate_environment_script('/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/env.sh')
+code = generate_environment_script('/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/env.sh')
 
 output_filename = '/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/catkin_generated/setup_cached.sh'
 with open(output_filename, 'w') as f:

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tf_tree)
 set(OpenCV_DIR /usr/local/share/OpenCV)
+set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs

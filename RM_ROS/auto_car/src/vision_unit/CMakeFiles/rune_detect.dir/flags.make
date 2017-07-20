@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_FLAGS =   -std=c++11
 
-CXX_DEFINES = -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"vision_unit\"
+CXX_DEFINES = -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"vision_unit\" -DUSE_LEVELDB -DUSE_LMDB -DUSE_OPENCV
 
-CXX_INCLUDES = -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/include -I/opt/ros/kinetic/include -I/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -isystem /opt/ros/kinetic/include/opencv-3.2.0-dev -isystem /opt/ros/kinetic/include/opencv-3.2.0-dev/opencv -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit/detect_factory -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit/vision_lidar_fusion 
+CXX_INCLUDES = -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/include -I/opt/ros/kinetic/include -I/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -isystem /opt/ros/kinetic/include/opencv-3.2.0-dev -isystem /opt/ros/kinetic/include/opencv-3.2.0-dev/opencv -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit/detect_factory -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/include/vision_unit/vision_lidar_fusion -isystem /usr/local/include -isystem /usr/include/hdf5/serial -isystem /usr/local/cuda-8.0/include -isystem /usr/include/atlas -isystem /home/team5/caffe-master/include 
 

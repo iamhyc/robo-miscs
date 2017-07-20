@@ -1,0 +1,8 @@
+
+内容：测试auto_car的依赖关系
+
+方法：执行catkin_make根据结果反馈去安装相应的依赖；如，“fatal error: caffe/caffe.hpp: 没有那个文件或目录”.目前已知需要: CUDA, OpenCV, Caffe;
+
+特点：不好用，caffe已经装好了仍然会找不到头文件，可能要自己摸索一下
+
+结论：似乎没有用没有用

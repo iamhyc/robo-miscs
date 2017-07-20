@@ -7,8 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/armor_detect.dir/src/detect_factory/armor_detect_node.cpp.o"
   "CMakeFiles/armor_detect.dir/src/detect_factory/util.cpp.o"
   "CMakeFiles/armor_detect.dir/src/detect_factory/video_recoder.cpp.o"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/vision_unit/armor_detect.pdb"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/vision_unit/armor_detect"
+  "../devel/lib/vision_unit/armor_detect.pdb"
+  "../devel/lib/vision_unit/armor_detect"
 )
 
 # Per-language clean rules from dependency scanning.

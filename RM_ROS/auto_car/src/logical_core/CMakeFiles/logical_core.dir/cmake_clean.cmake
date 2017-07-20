@@ -5,8 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/logical_core.dir/src/patrol_mode.cpp.o"
   "CMakeFiles/logical_core.dir/src/point_mode.cpp.o"
   "CMakeFiles/logical_core.dir/src/shooting_mode.cpp.o"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/logical_core/logical_core.pdb"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/logical_core/logical_core"
+  "../devel/lib/logical_core/logical_core.pdb"
+  "../devel/lib/logical_core/logical_core"
 )
 
 # Per-language clean rules from dependency scanning.

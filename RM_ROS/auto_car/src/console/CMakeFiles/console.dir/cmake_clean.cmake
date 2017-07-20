@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/console.dir/src/console.cpp.o"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/console/console.pdb"
-  "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel/lib/console/console"
+  "../devel/lib/console/console.pdb"
+  "../devel/lib/console/console"
 )
 
 # Per-language clean rules from dependency scanning.

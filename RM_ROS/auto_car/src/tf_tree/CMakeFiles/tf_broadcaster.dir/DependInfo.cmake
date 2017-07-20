@@ -18,10 +18,10 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/usr/local/include/opencv"
+  "/usr/local/include"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
-  "/usr/local/include"
-  "/usr/local/include/opencv"
   "tf_tree/include"
   "tf_tree/include/tf_tree"
   "tf_tree/../param_manager/include"

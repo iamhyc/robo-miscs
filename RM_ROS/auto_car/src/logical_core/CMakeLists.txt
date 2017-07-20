@@ -3,6 +3,7 @@ project(logical_core)
 
 add_definitions(-std=c++11)
 set(OpenCV_DIR /usr/local/share/OpenCV/)
+set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib

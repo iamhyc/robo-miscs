@@ -23,23 +23,23 @@ namespace serial_mul
 {
 typedef struct
 {
-  uint8_t sof;
-  int16_t angle;
-  int16_t v_w;
-  int16_t v_x;
-  int16_t v_y;
+  uint8_t sof;//(MPU6050 data?)
+  int16_t angle;//???
+  int16_t v_w;//velocity of rotate
+  int16_t v_x;//velocity of x-axis
+  int16_t v_y;//velocity of y-axis
 
 
-  uint8_t flag;
-  uint32_t x;
-  uint32_t y;
-  uint32_t z;
-  uint32_t compass;
-  uint8_t data_status;
+  uint8_t flag;//(seems like UWB data format)
+  uint32_t x;//(seems like UWB data format)
+  uint32_t y;//(seems like UWB data format)
+  uint32_t z;//(seems like UWB data format)
+  uint32_t compass;//(seems like UWB data format)
+  uint8_t data_status;//???
 
-  float pan_title_yaw;
-  float pan_title_pitch;
-  uint8_t end;
+  float pan_title_yaw;//yun_tai_yaw(z-axis)
+  float pan_title_pitch;//yun_tai_pitch(x-axis)
+  uint8_t end;//fixed: 0xFE
 }__attribute__((packed)) data_t;
 
 class comm_read{

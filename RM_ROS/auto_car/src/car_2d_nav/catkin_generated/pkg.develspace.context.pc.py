@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "".split(';') if "" != "" else []
 PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "car_2d_nav"
-PROJECT_SPACE_DIR = "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/devel"
+PROJECT_SPACE_DIR = "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel"
 PROJECT_VERSION = "0.0.0"

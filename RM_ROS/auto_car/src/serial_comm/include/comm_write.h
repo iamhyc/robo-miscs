@@ -18,15 +18,16 @@ namespace serial_mul
 {
 typedef struct
 {
-    uint8_t sof;
-    int16_t auto_vx;
-    int16_t auto_vy;
-    int16_t auto_vw;
-    uint8_t vision_data_status;
-    int16_t vision_data_x;
-    int16_t vision_data_y;
-    int16_t vision_data_d;
-    uint8_t end;
+    uint8_t sof;//0xA5
+    uint8_t myinfo;//???
+    int16_t auto_vx;//?->move_base::vel_data.linear.x
+    int16_t auto_vy;//?->move_base::vel_data.linear.x
+    int16_t auto_vw;//?->move_base::vel_data.angular.z
+    uint8_t vision_data_status;//enemy detected, 1 for yes, 0 for no
+    int16_t vision_data_x;//enemy x coordination
+    int16_t vision_data_y;//enemy y coordination
+    int16_t vision_data_d;//enemy angle direction
+    uint8_t end;//0xFE
 
 }__attribute__((packed)) data_t;
 

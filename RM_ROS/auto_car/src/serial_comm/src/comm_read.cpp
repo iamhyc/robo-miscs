@@ -10,12 +10,12 @@ comm_read::comm_read()
   //std::string serial_port;
   data_len = sizeof(data_t);
   dev = "/dev/ttyTHS2";
-  serial_baudrate = B115200;
+  serial_baudrate = B115200;//115200
 }
 
 bool comm_read::read_setup()
 {
-  fd = open (dev.c_str(), O_RDWR);
+  fd = open (dev.c_str(), O_RDWR);//open serial device
   if(fd==-1)
   {
     //perror("error!");
@@ -46,7 +46,7 @@ void comm_read::read_init()
 {
   uint8_t buff[data_len];
   memset(buff, 0, data_len);
-  read(fd, buff, sizeof(data_t));
+  read(fd, buff, sizeof(data_t));//block until 
   memcpy(&data, buff, sizeof(data_t));
   if(data.sof==0xA5 && data.end == 0xfe)
     init_yaw = data.angle;
@@ -58,7 +58,7 @@ void comm_read::read_data()
   memset(buff, 0, data_len);
   read(fd,buff,sizeof(data_t));
   memcpy(&data, buff, sizeof(data_t));
-  if(data.sof==0xA5 && data.end == 0xfe)
+  if(data.sof==0xA5 && data.end == 0xfe)//heand and tail check
   {
     Y             = data.angle - init_yaw;
     YawAngle      = Y*(M_PI/180.);

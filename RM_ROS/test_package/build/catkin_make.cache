@@ -1,2 +1,0 @@
-vision_unit
--DCATKIN_DEVEL_PREFIX=/home/ubuntu/ws/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/ws/install -G Unix Makefiles

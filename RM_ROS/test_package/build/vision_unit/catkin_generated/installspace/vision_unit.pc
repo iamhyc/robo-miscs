@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/ws/install
-
-Name: vision_unit
-Description: Description of vision_unit
-Version: 0.1.0
-Cflags: -I/home/ubuntu/ws/install/include
-Libs: -L/home/ubuntu/ws/install/lib 
-Requires: 

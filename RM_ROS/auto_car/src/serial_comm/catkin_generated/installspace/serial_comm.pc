@@ -1,8 +1,8 @@
-prefix=/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/install
+prefix=/usr/local
 
 Name: serial_comm
 Description: Description of serial_comm
 Version: 1.0.0
-Cflags: -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/install/include
-Libs: -L/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/install/lib 
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib 
 Requires: message_runtime
