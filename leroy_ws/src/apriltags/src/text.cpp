@@ -20,16 +20,7 @@ using namespace std;
 #include <vector>
 #include <list>
 #include <sys/time.h>
-#include <string>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include "pipe.h"
+
 const string usage = "\n"
   "Usage:\n"
   "  apriltags_demo [OPTION...] [IMG1 [IMG2...]]\n"
@@ -59,9 +50,7 @@ const string intro = "\n"
 
 #ifndef __APPLE__
 #define EXPOSURE_CONTROL // only works in Linux
-#define FIFO_FILE "/tmp/april_tags"
 #endif
-//int FIFO_Handler =0;
 
 #ifdef EXPOSURE_CONTROL
 #include <libv4l2.h>
@@ -90,11 +79,10 @@ extern char *optarg;
 
 // For Arduino: locally defined serial port access class
 #include "Serial.h"
-int sb  = 0;  
-int tags_array[4] = {0,0,0,0};
+
 
 const char* windowName = "apriltags_demo";
-//int[4] tagList = {0, 0};
+int[4] tagList = {0, 0};
 
 // utility function to provide current system time (used below in
 // determining frame rate at which images are being processed)
@@ -353,7 +341,7 @@ public:
          << m_cap.get(CV_CAP_PROP_FRAME_WIDTH) << "x"
          << m_cap.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
     //draw the detection range
-    
+    cv::
   }
 
   void print_detection(AprilTags::TagDetection& detection) const {
@@ -380,7 +368,7 @@ public:
     Eigen::Matrix3d fixed_rot = F*rotation;
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
-/* not for first stage
+
     cout << "  distance=" << translation.norm()
          << "m, x=" << translation(0)
          << ", y=" << translation(1)
@@ -390,36 +378,13 @@ public:
          << ", roll=" << roll
          << ", center= " << detection.cxy.first << ", " << detection.cxy.second
          << endl;
-*/  detectPos(detection);
 
     // Also note that for SLAM/multi-view application it is better to
     // use reprojection error of corner points, because the noise in
     // this relative pose is very non-Gaussian; see iSAM source code
     // for suitable factors.
   }
-  //identify which section the tag is at!
-  void detectPos(AprilTags::TagDetection& detection) const  {
-    int id = detection.id;
-    if (id < 4 && id >= 0){
 
-      if(detection.cxy.first >= 180 && detection.cxy.first <= 340 && detection.cxy.second >= 40
-               && detection.cxy.second <= 120){
-        tags_array[0] = 1;
-      }
-      if(detection.cxy.first >= 50 && detection.cxy.first <= 180 && detection.cxy.second >= 270
-               && detection.cxy.second <= 420){
-        tags_array[1] = 1;
-      }
-      if(detection.cxy.first >= 430 && detection.cxy.first <= 600 && detection.cxy.second >= 300
-               && detection.cxy.second <= 430){
-        tags_array[2] = 1;
-      }
-      if(detection.cxy.first >= 480 && detection.cxy.first <= 550 && detection.cxy.second >= 120
-               && detection.cxy.second <= 200){
-        tags_array[3] = 1;
-      }
-    }
-  }
   void processImage(cv::Mat& image, cv::Mat& image_gray) {
     // alternative way is to grab, then retrieve; allows for
     // multiple grab when processing below frame rate - v4l keeps a
@@ -434,11 +399,6 @@ public:
       t0 = tic();
     }
     vector<AprilTags::TagDetection> detections = m_tagDetector->extractTags(image_gray);
-    for (int i=0; i<detections.size(); i++) {
-      if (detections[i].id  >= 4 || detections[i].id  < 0){
-        return;
-      }
-    }
     if (m_timing) {
       double dt = tic()-t0;
       cout << "Extracting tags took " << dt << " seconds." << endl;
@@ -448,11 +408,8 @@ public:
     if(detections.size() > 0) {
       cout << detections.size() << " tags detected:" << endl;
     }
-    //comment out for test
     for (int i=0; i<detections.size(); i++) {
-      if (detections[i].id < 4 && detections[i].id >= 0){
-        print_detection(detections[i]);
-      }
+      print_detection(detections[i]);
     }
 
     // show the current image including any detections
@@ -461,10 +418,7 @@ public:
         // also highlight in the image
         detections[i].draw(image);
       }
-      cv::rectangle(image, cv::Point2f(180.0, 120.0), cv::Point2f(340.0, 40.0), cv::Scalar(0,0,255,0) );
-      cv::rectangle(image, cv::Point2f(50.0, 420.0), cv::Point2f(180.0, 270.0), cv::Scalar(0,0,255,0) );
-      cv::rectangle(image, cv::Point2f(430.0, 430.0), cv::Point2f(600.0, 300.0), cv::Scalar(0,0,255,0) );
-      cv::rectangle(image, cv::Point2f(480.0, 200.0), cv::Point2f(550.0, 120.0), cv::Scalar(0,0,255,0) );
+      
       imshow(windowName, image); // OpenCV call
     }
 
@@ -507,61 +461,28 @@ public:
   bool isVideo() {
     return m_imgNames.empty();
   }
-  
-  string int_array_to_string(int int_array[], int size_of_array) {
-  ostringstream oss("");
-  for (int temp = 0; temp < size_of_array; temp++)
-    oss << int_array[temp];
-  return oss.str();
-}
+
   // The processing loop where images are retrieved, tags detected,
   // and information about detections generated
   void loop() {
+
     cv::Mat image;
     cv::Mat image_gray;
 
     int frame = 0;
     double last_t = tic();
-
     while (true) {
 
       // capture frame
       m_cap >> image;
 
       processImage(image, image_gray);
+
       // print out the frame rate at which image frames are being processed
       frame++;
       if (frame % 10 == 0) {
         double t = tic();
-        string str = int_array_to_string(tags_array,4);
-        
-        if(atoi(str.c_str()) != 0){
-          cout << str << endl;
-        }
-        //read file
-        // char buf[20] = 
-        // int fd = -1;
-        // fd = open("data.txt", O_RDWR);
-        // int ret = write(fd, str, strlen(str));
-        // close(fd);
-        
-        mes_write(sb,str.c_str());
-       // mes_write(sb,"hellow");
-        cout << str <<endl;
-        // if ((write(FIFO_Handler, tags_array, sizeof(tags_array))) < 0) 
-        // {
-        //     if (errno ==  EAGAIN) 
-        //     printf("The  FIFO has not been read yet.Please try later\n");
-        // }
-        // else
-        // {
-        //  cout<< int_array_to_string( tags_array,4)<<endl;
-        // }
-        tags_array[0] = 0;
-        tags_array[1] = 0; 
-        tags_array[2] = 0;
-        tags_array[3] = 0;
-        // cout << "  " << 10./(t-last_t) << " fps" << endl;
+        cout << "  " << 10./(t-last_t) << " fps" << endl;
         last_t = t;
       }
 
@@ -573,30 +494,16 @@ public:
 
 }; // Demo
 
-// int pipe_tx_init()
-// {
-    
-//   if ((FIFO_Handler  = open(FIFO_FILE,O_WRONLY | O_NONBLOCK)) < 0) //非阻塞方式打开
-//   {
-//     perror("open  error");
-//     exit(-1);
-//   }
-
-//   printf("%s\n", "FIFO Initialized.");
-
-// }
 
 // here is were everything begins
 int main(int argc, char* argv[]) {
   
   Demo demo;
-  sb = mes_open(12345);
+
   // process command line options
   demo.parseOptions(argc, argv);
 
   demo.setup();
-
-  //pipe_tx_init();
 
   if (demo.isVideo()) {
     cout << "Processing video" << endl;
