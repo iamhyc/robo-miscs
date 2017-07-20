@@ -1,0 +1,30 @@
+
+1.rosgraph & rosgraph2:
+	关键的地方1：串口，serialRead读取传感器+UWB，serialWrite控制姿态（move_base经过复杂的来源得到的数据）
+	
+2.rosgraph_stage & rosgraph_stage2:
+	这里stage充当了I/O的角色，仅此而已，所以6666.
+
+（1）I/O节点
+	Input包括{map_server,serialRead->car_info->odometry_pulisher, rplidarnode, armor_detect}，也就是对车载<里程计+UWB+激光雷达>的信息进行融合，加上预存的地图数据作为辅助；同事视觉对敌方装甲板识别，得到敌方位置信息。
+	Output包括{move_base->cmd_vel, armor_info}，其中move_base重中之重
+
+（2）中转节点（Router路由）
+	tf & amcl：tf是里程计 和 激光雷达 数据的坐标转换，AMCL处则融合了两者数据
+		robot_tf_broadcaster提供了/tf这个topic，robot_tf_listener对于/tf上的话题汇总（调试用）
+		AMCL数据源：
+			{/tf_static-->/amcl, /odometry-->/tf-->/amcl, /rplidarNode--/scan-->/amcl}
+			里程计(/tf后) + 激光雷达(/scan)-->AMCL（增强蒙特卡洛定位算法）(/amcl)-->【/tf】-->【/move_base】奇妙的环形数据链！
+		tf链条：
+			{PLACEHOLDER}
+		注意！tf节点不包括地图信息！
+					
+	move_base:一切的终点与起点
+		数据链条：（数据源）
+			【存储地图】：/map_server-->【/move_base】
+			【里程计】：  /odometry_publisher(6050+UWB)-->【move_base】
+			【AMCL】：/rplidarNode(+/odometry-->/tf)-->/amcl-->【/tf】-->【move_base】
+			【莫名其妙】：tf_static-->【/move_base】
+		路由环路：（处理中心）
+
+（3）
