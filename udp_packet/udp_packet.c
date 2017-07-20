@@ -41,6 +41,6 @@ int udp_packet_tx(char* buff)
 int main(int argc, char const *argv[])
 {
 	udp_init();
-	udp_packet_tx("this is a test message witouht case sensitivity");
+	udp_packet_tx("this is a test message witouht case sensitivity.");
 	return 0;
 }
