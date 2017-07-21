@@ -20,9 +20,15 @@ inline int mes_open(key_t flag){
 
 inline int mes_write(int pHandle,const char* message){
     struct msg_st data;
-    data.msg_type = 1;    //注意2  
-    strcpy(data.text, message);
-    return msgsnd(pHandle, (void*)&data, PIPE_BUFSIZ, 0);
+    data.msg_type = 1;    //注意2
+    int len  =  strlen(message);
+    if(len > 0){
+        strcpy(data.text, message);
+        return msgsnd(pHandle, (void*)&data, PIPE_BUFSIZ, 0);
+    }
+    else{
+    	return 0;
+    }
 }
 inline const char* mes_read(int pHandle){
     static struct msg_st data;
