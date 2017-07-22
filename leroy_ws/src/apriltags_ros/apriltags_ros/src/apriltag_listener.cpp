@@ -41,10 +41,16 @@
 	 	for (int i = 0; i < msg.detections.size(); i++){
 	 		std::cout << (int)msg.detections[i].id << endl;
 	 		cout << msg.detections[i].plan << endl;
+//	 		direction(msg.detections[i].pose);
+
 	 	}
 	 }
 	}
 
+void direction(geometry_msgs::PoseStamped tag_pose){
+//	geometry_msgs::PoseStamped tag_pose = tag_pose;
+	//use of pose
+}
 	
 
 

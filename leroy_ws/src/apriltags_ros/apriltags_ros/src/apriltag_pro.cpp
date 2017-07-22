@@ -116,11 +116,13 @@ static int frame_count = 0;
       }
       cout << int_array_to_string(tags_array,4) << endl;
         // mark center
+      cv::circle(image, cv::Point2f(320, 320), 8, cv::Scalar(0,0,255,0), 2);
 
+/*
       cv::rectangle(image, cv::Point2f(180.0, 120.0), cv::Point2f(340.0, 40.0), cv::Scalar(0,0,255,0) );
       cv::rectangle(image, cv::Point2f(50.0, 420.0), cv::Point2f(180.0, 270.0), cv::Scalar(0,0,255,0) );
       cv::rectangle(image, cv::Point2f(430.0, 430.0), cv::Point2f(600.0, 300.0), cv::Scalar(0,0,255,0) );
-      cv::rectangle(image, cv::Point2f(480.0, 200.0), cv::Point2f(550.0, 120.0), cv::Scalar(0,0,255,0) );
+      cv::rectangle(image, cv::Point2f(480.0, 200.0), cv::Point2f(550.0, 120.0), cv::Scalar(0,0,255,0) );*/
       imshow(OPENCV_WINDOW, image);  // OpenCV call
 
     // optionally send tag information to serial port (e.g. to Arduino)
