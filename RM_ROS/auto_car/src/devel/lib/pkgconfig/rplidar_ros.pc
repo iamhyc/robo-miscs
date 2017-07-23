@@ -1,8 +1,0 @@
-prefix=/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel
-
-Name: rplidar_ros
-Description: Description of rplidar_ros
-Version: 1.5.7
-Cflags: 
-Libs: -L/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/lib 
-Requires: 

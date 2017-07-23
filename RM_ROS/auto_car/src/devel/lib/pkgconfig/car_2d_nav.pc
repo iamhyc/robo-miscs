@@ -1,8 +1,0 @@
-prefix=/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel
-
-Name: car_2d_nav
-Description: Description of car_2d_nav
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/lib 
-Requires: 

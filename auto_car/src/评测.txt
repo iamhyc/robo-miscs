@@ -1,0 +1,4 @@
+1.RM官方包括car_2d_nav-->move_base, odometry, tf_tree, vision_unit;
+  而核心的路径规划内容在于魔改的move_base的依赖中：base_local_planner, clear_costmap_recovery, rotate_recovery, costmap_2d, dynamic_reconfigure, nav_core
+
+2.
