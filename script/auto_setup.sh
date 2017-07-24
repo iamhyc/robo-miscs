@@ -1,8 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 
 #VARIALBE
 HOSTS='/etc/hosts'
 HOSTS_BK='/etc/hosts.save'
+
+# dependency check
+function pkg_check(){
+	pkg=$1;
+	pkg_status=$(dpkg-query -l $pkg | awk '($1=="rc") {print "N"}')
+	if [ -n "$pkg_status" ];then
+		echo '[PENDING]' $pkg
+ 		sudo apt-get install -y $pkg 1> /dev/null
+ 		echo '[INSTALLED]' $pkg
+ 	else
+ 		echo '[INSTALLED]' $pkg
+ 	fi
+}
+echo '----------------Dependency Check Start----------------------'
+pkg_check "samba"
+echo '-----------------Dependency Check Over----------------------'
 
 #cleanup HOSTS and rebuild
 echo '-------------------HOST Setup Start-------------------------'
