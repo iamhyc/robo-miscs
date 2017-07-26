@@ -9,8 +9,8 @@ ROS_MASTER='TX1-team05'
 # dependency check
 function pkg_check(){
 	pkg=$1;
-	pkg_status=$(dpkg-query -l $pkg | awk '($1=="rc") {print "N"}')
-	if [ -n "$pkg_status" ];then
+	pkg_status=$(dpkg-query -l $pkg | awk '($1=="rc"||$1=="un") {print "N"}')
+	if [ "$pkg_status" == "N" ];then
 		echo '[PENDING..]' $pkg
  		sudo apt-get install -y $pkg 1> /dev/null
  		echo '[INSTALLED]' $pkg
@@ -20,6 +20,7 @@ function pkg_check(){
 }
 echo '----------------Dependency Check Start----------------------'
 pkg_check "samba"
+pkg_check "nmap"
 echo '----------------Dependency Check Over-----------------------'
 echo
 
@@ -33,14 +34,14 @@ sudo service samba restart
 echo
 echo '-------------------HOST Setup Start-------------------------'
 sudo cp $HOSTS $HOSTS_BK
-sudo echo -e 'localhost\t\t127.0.0.1' > $HOSTS
-sudo echo -e $(hostname)'\t\t127.0.1.1' >> $HOSTS
+sudo echo -e '127.0.0.1\t\tlocalhost' > $HOSTS
+sudo echo -e '127.0.1.1\t\t'$(hostname) >> $HOSTS
 
 for ip_address in $(nmap -p 137 192.168.0.0/24 --max-rtt-timeout 5 -oG - | grep netbios | awk '{print $2}')
 do
         hostname=$(timeout 1 nmblookup -A $ip_address | awk '$2 == "<20>" {print $1}')
         if [ -n "$hostname" ];then
-        	sudo echo -e "$hostname\t\t$ip_address" >> $HOSTS
+        	sudo echo -e "$ip_address\t\t$hostname" >> $HOSTS
         fi 
 done
 cat $HOSTS
