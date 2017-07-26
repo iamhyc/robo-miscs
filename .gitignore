@@ -1,6 +1,7 @@
-RM_ROS/auto_car/tags
-RM_ROS/auto_car/devel/
-RM_ROS/auto_car/build/
+auto_car/src/CMakeLists.txt
+auto_car/tags
+auto_car/devel/
+auto_car/build/
 RM_ROS/rune_detect/
 RM_ROS/test_package/devel
 RM_ROS/test_package/build
