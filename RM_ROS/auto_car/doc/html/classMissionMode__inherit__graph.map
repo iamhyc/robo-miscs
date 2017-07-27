@@ -1,0 +1,5 @@
+<map id="MissionMode" name="MissionMode">
+<area shape="rect" id="node2" href="$classPatrolMode.html" title="PatrolMode" alt="" coords="5,80,93,107"/>
+<area shape="rect" id="node3" href="$classPointMode.html" title="PointMode" alt="" coords="118,80,202,107"/>
+<area shape="rect" id="node4" href="$classShootingMode.html" title="ShootingMode" alt="" coords="226,80,331,107"/>
+</map>

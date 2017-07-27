@@ -1,0 +1,4 @@
+var structros_1_1serialization_1_1Serializer_3_01_1_1logical__core_1_1SetGoalRequest___3_01ContainerAllocator_01_4_01_4 =
+[
+    [ "ROS_DECLARE_ALLINONE_SERIALIZER", "structros_1_1serialization_1_1Serializer_3_01_1_1logical__core_1_1SetGoalRequest___3_01ContainerAllocator_01_4_01_4.html#a0ed79b38dc170922e97e9162eed6dc42", null ]
+];

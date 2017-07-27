@@ -1,0 +1,2 @@
+set(logical_core_MESSAGE_FILES "")
+set(logical_core_SERVICE_FILES "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/logical_core/srv/SetGoal.srv")

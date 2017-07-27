@@ -1,0 +1,4 @@
+<map id="vision_unit::SetGoal" name="vision_unit::SetGoal">
+<area shape="rect" id="node2" href="$structvision__unit_1_1SetGoalRequest__.html" title="vision_unit::SetGoalRequest\l_\&lt; ContainerAllocator \&gt;" alt="" coords="11,5,199,47"/>
+<area shape="rect" id="node3" href="$structvision__unit_1_1SetGoalResponse__.html" title="vision_unit::SetGoalResponse\l_\&lt; ContainerAllocator \&gt;" alt="" coords="5,71,204,112"/>
+</map>

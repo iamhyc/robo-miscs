@@ -1,0 +1,4 @@
+1. Doxygen用于项目管理的文档生成，所以说doc/html/index.html打开，就能看到项目结构；
+   项目结构管理是Qt；
+   项目源码管理当然是catkin，使用前先在workspace中执行`catkin_make` ；聚焦于src文件夹即可
+2.catkin_make依赖用apt解决:ros-*-move_base_msgs, ros-*-nav-core, OpenCV（跟着官网编译即可）, caffe（自行百度安装方法）；在
