@@ -1,49 +1,21 @@
-
-#include <opencv2/objdetect/objdetect.hpp>
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include <iostream>
-#include <stdio.h>
 #include "opencv2/opencv.hpp"
-#include "ros/ros.h"
-#include <detect_car/flight_msg.h>
 #include "detect.h"
 using namespace std;
 using namespace cv;
 
-int low_hsv_circleB[3]={105, 100, 50}; // h:0 to 10 for red circle 105 to 115 for blue
-int high_hsv_circleB[3]={115, 255, 200};
-int low_hsv_circleR[3]={0, 100, 50}; // h:0 to 10 for red circle 105 to 115 for blue
-int high_hsv_circleR[3]={10, 255, 200};
-int low_hsv_car[3]={70, 50, 50}; // h:70 to 85 for green car 105 to 115
-int high_hsv_car[3]={85, 255, 255};
-int m_cap = 0;
 
-typedef struct
-{
-	geometry_msgs::Vector3 data;
-	bool flag;
-}Data;
-
-
-Data data_circle = {};
-Data data_car = {};
-
-void solveDistance (Mat frame, vector<Point2d> image_points, Data data);
-void find(Mat frame, Data data, int low_hsv[3], int high_hsv[3]);
-
-
-void detect_init(int m_cap){
-	VideoCapture cap = VideoCapture(m_cap);
+VideoCapture detect_init(int m_cap){
+VideoCapture cap = VideoCapture("/home/leory/shit_ws/src/detect_car/codes/Video.avi"); // VC(0)
 	//while(1){
 	if(!cap.isOpened()){
 		cout << "error!" << endl;
-		return;
+		return 0;
 	// Mat grayframe;
 		//Mat frame = imread("imgs/leroy.jpg", CV_LOAD_IMAGE_COLOR); 
 	}
+	return cap;
 }
-void detect(VideoCapture cap, Data data_circle, Data data_car){
+void detect(VideoCapture cap, Data& data_circle, Data& data_car){
 	Mat frame;
 	cap.read(frame);
 	if(! frame.data )                            
@@ -53,8 +25,10 @@ void detect(VideoCapture cap, Data data_circle, Data data_car){
 	}	
 	find(frame, data_circle,low_hsv_circleB, high_hsv_circleB);
 	find(frame, data_car, low_hsv_car, high_hsv_car);
+	imshow("frame", frame);
+	waitKey(1);
 }
-void solveDistance (Mat frame, vector<Point2d> image_points, Data data){
+void solveDistance (Mat frame, vector<Point2d> image_points, Data& data){
 
     vector<Point3d> model_points;     
     model_points.push_back(cv::Point3d(-0.25f, -0.25f, 0.4f)); 
@@ -80,17 +54,17 @@ void solveDistance (Mat frame, vector<Point2d> image_points, Data data){
 	data.data.z = tz;
 	data.flag = true;
 	double dist = std::sqrt(tx*tx + ty*ty + tz*tz);
-	cout << "x:" << tx <<",  " << "y: " << ty <<",  " << "z:" << tz << endl;
+	//cout << "x:" << tx <<",  " << "y: " << ty <<",  " << "z:" << tz << endl;
     for(int i=0; i < image_points.size(); i++)
     {
         circle(frame, image_points[i], 3, Scalar(0,0,255), -1);
     }
 }
 
-void find(Mat frame, Data data, int low_hsv[3], int high_hsv[3]){
+void find(Mat frame, Data& data, int low_hsv[3], int high_hsv[3]){
 	Mat HSV;
 	cvtColor(frame, HSV, CV_BGR2HSV);
-	imshow("HSV",HSV);
+	//imshow("HSV",HSV);
 	Mat frame_threshold;
 	Mat frame_threshold2;
 	vector<vector<Point> > contours;
@@ -117,7 +91,7 @@ void find(Mat frame, Data data, int low_hsv[3], int high_hsv[3]){
 		if(area0 / area1>0.85){
 			contours_new.push_back(contours[i]);
 			//center  - Point2f(320, 240)
-			cout << center.x  - 320 << ", " << 240 - center.y  << endl;
+			//cout << center.x  - 320 << ", " << 240 - center.y  << endl;
 			new_Rect.push_back(tmp);
 			
 		}
@@ -139,5 +113,18 @@ void find(Mat frame, Data data, int low_hsv[3], int high_hsv[3]){
 	}
 }
 int main(){
-	return 1;
+	Data data_car = {};
+	Data data_circle = {};
+	VideoCapture cap = detect_init(0);
+	while(1){
+		detect(cap, data_circle, data_car);
+		if(data_car.flag){
+			cout << data_car.data << endl;
+			data_circle.flag = false;
+		}
+		if(data_circle.flag){
+			cout << data_circle.data << endl;
+			data_circle.flag = false;
+		}
+	}
 }

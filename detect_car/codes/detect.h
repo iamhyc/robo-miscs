@@ -1,5 +1,6 @@
 #ifndef __DETECT_H__
 #define __DETECT_H__
+#endif
 #include <opencv2/objdetect/objdetect.hpp>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -15,7 +16,7 @@ int low_hsv_circleB[3]={105, 100, 50}; // h:0 to 10 for red circle 105 to 115 fo
 int high_hsv_circleB[3]={115, 255, 200};
 int low_hsv_circleR[3]={0, 100, 50}; // h:0 to 10 for red circle 105 to 115 for blue
 int high_hsv_circleR[3]={10, 255, 200};
-int low_hsv_car[3]={70, 50, 50}; // h:70 to 85 for green car 105 to 115
+int low_hsv_car[3]={70, 50, 50}; // h:70 to 85 for green car 105 to 115 need more tests.
 int high_hsv_car[3]={85, 255, 255};
 int m_cap = 0;
 
@@ -29,7 +30,7 @@ typedef struct
 Data data_circle = {};
 Data data_car = {};
 
-void solveDistance (Mat frame, vector<Point2d> image_points, Data data);
-void find(Mat frame, Data data, int low_hsv[3], int high_hsv[3]);
-void detect(VideoCapture cap, Data data_circle, Data data_car);
-void solveDistance (Mat frame, vector<Point2d> image_points, Data data);
+VideoCapture detect_init(int m_cap);
+void find(Mat frame, Data& data, int low_hsv[3], int high_hsv[3]);
+void detect(VideoCapture cap, Data& data_circle, Data& data_car);
+void solveDistance (Mat frame, vector<Point2d> image_points, Data& data);
