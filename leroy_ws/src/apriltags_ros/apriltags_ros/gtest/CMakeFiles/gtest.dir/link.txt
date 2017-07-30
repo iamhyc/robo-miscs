@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -g  -shared -Wl,-soname,libgtest.so -o libgtest.so CMakeFiles/gtest.dir/src/gtest-all.cc.o  -L/home/leory/Yaphets_ws/src/apriltags_ros/apriltags_ros/gtest/src -lpthread -Wl,-rpath,/home/leory/Yaphets_ws/src/apriltags_ros/apriltags_ros/gtest/src 

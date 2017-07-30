@@ -141,7 +141,6 @@ void TagDetection::draw(cv::Mat& image) const {
   std::pair<float, float> p3 = p[2];
   std::pair<float, float> p4 = p[3];
 
-<<<<<<< HEAD
   // plot outline
   cv::line(image, cv::Point2f(p1.first, p1.second), cv::Point2f(p2.first, p2.second), cv::Scalar(255,0,0,0) );
   cv::line(image, cv::Point2f(p2.first, p2.second), cv::Point2f(p3.first, p3.second), cv::Scalar(0,255,0,0) );
@@ -158,23 +157,5 @@ void TagDetection::draw(cv::Mat& image) const {
               cv::Point2f(cxy.first + 10, cxy.second + 10),
               cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255));
 }
-=======
-  // plot outline for speeding up
-/*  cv::line(image, cv::Point2f(p1.first, p1.second), cv::Point2f(p2.first, p2.second), cv::Scalar(0,0,255,0) );
-  cv::line(image, cv::Point2f(p2.first, p2.second), cv::Point2f(p3.first, p3.second), cv::Scalar(0,0,255,0) );
-  cv::line(image, cv::Point2f(p3.first, p3.second), cv::Point2f(p4.first, p4.second), cv::Scalar(0,0,255,0) );
-  cv::line(image, cv::Point2f(p4.first, p4.second), cv::Point2f(p1.first, p1.second), cv::Scalar(0,0,255,0) );*/
-  //draw detection range
-
-  // mark center
-  cv::circle(image, cv::Point2f(cxy.first, cxy.second), 8, cv::Scalar(0,0,255,0), 2, 15);
-  // print ID
-  std::ostringstream strSt;
-  strSt << "#" << id << "here!     :" << cxy.first << ", " << cxy.second;
-//   cv::putText(image, strSt.str(),
-//               cv::Point2f(cxy.first + 10, cxy.second + 10),
-//               cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255));
- }
->>>>>>> 78d3e61538d56afca5c424c165b9bfa7d3b4d7ae
 
 } // namespace
