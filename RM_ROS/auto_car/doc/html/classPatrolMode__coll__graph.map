@@ -1,3 +1,0 @@
-<map id="PatrolMode" name="PatrolMode">
-<area shape="rect" id="node2" href="$classMissionMode.html" title="There are three missions of the autocar: point state, patrol state, shooting state. and the autocar also have three state: OBTAINED_GOAL_STATE, BUSY_STATE, IDLE_STATE. " alt="" coords="5,5,104,32"/>
-</map>

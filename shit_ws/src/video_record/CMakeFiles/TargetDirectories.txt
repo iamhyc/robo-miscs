@@ -1,4 +1,0 @@
-/home/leory/Yaphets_ws/src/video_record/CMakeFiles/rebuild_cache.dir
-/home/leory/Yaphets_ws/src/video_record/CMakeFiles/pic.dir
-/home/leory/Yaphets_ws/src/video_record/CMakeFiles/edit_cache.dir
-/home/leory/Yaphets_ws/src/video_record/CMakeFiles/record_video.dir

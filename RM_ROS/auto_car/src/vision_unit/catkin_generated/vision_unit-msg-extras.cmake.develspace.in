@@ -1,2 +1,0 @@
-set(vision_unit_MESSAGE_FILES "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/msg/armor_msg.msg;/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/msg/transformed_scan.msg")
-set(vision_unit_SERVICE_FILES "/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/vision_unit/srv/SetGoal.srv")

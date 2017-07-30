@@ -1,4 +1,0 @@
-var structros_1_1serialization_1_1Serializer_3_01_1_1serial__comm_1_1serial__data___3_01ContainerAllocator_01_4_01_4 =
-[
-    [ "ROS_DECLARE_ALLINONE_SERIALIZER", "structros_1_1serialization_1_1Serializer_3_01_1_1serial__comm_1_1serial__data___3_01ContainerAllocator_01_4_01_4.html#a2b2e327ac5e24505b08c98e722b115f3", null ]
-];

@@ -1,1 +1,0 @@
-		oVideoWriter.write(frame);

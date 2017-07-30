@@ -1,8 +1,0 @@
-prefix=/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel
-
-Name: move_base
-Description: Description of move_base
-Version: 1.14.0
-Cflags: -I/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/include
-Libs: -L/home/team5/Desktop/robo-miscs/RM_ROS/auto_car/src/devel/lib 
-Requires: roscpp dynamic_reconfigure

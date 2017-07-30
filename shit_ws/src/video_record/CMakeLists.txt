@@ -1,7 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project(record_video)
-find_package( OpenCV REQUIRED )
-add_executable( record_video record.cpp )
-target_link_libraries( record_video ${OpenCV_LIBS} )
-add_executable( pic pic.cpp )
-target_link_libraries( pic ${OpenCV_LIBS} )
