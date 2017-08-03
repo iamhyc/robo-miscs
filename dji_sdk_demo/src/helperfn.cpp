@@ -37,6 +37,22 @@ float inRange(float num, float lower, float upper)
 		return num;
 }
 
+void originTranslation(CtrlType::Vector3& dest, const CtrlType::Vector3& src, bool isReversed=false)
+{
+    if(isReversed)
+    {
+        dest.x = dest.x + src.y;
+        dest.y = dest.y + src.x;
+        dest.z = -dest.z + src.z;
+    }
+    else
+    {
+        dest.x = dest.x + src.x;
+        dest.y = dest.y + src.y;
+        dest.z = dest.z + src.z;
+    }
+}
+
 void genVector3Msg(std::stringstream& msg, std::string pre, \
 					float x, float y, float z)
 {
@@ -46,7 +62,7 @@ void genVector3Msg(std::stringstream& msg, std::string pre, \
     msg << z << " }";
 }
 
-void LoadParamFile(CtrlType::Vector3& expect, \
+void LoadParamFile(CtrlType::Vector3& expect, CtrlType::Vector3& origin, \
                 CtrlType::dpid_T &pid_x, CtrlType::dpid_T& pid_y, CtrlType::pid_T &pid_z, bool resetPID)
 {
 
@@ -56,9 +72,11 @@ void LoadParamFile(CtrlType::Vector3& expect, \
 
         auto itD = fs["DEST"].begin(), itV = fs["VEL_LIM"].begin(), itE = fs["ERR_LIM"].begin();
         auto itX = fs["PID_X"].begin(), itY = fs["PID_Y"].begin(), itZ = fs["PID_Z"].begin();
+        auto itO = fs["Origin"].begin();
         //n.type() == FileNode::SEQ
 
         expect.x = *(itD); expect.y = *(++itD); expect.z = *(++itD);
+        origin.x = *(itO); origin.y = *(++itO); origin.z = *(++itO);
         pid_x.pos_loop.vel_lim = (float)(*itV); pid_y.pos_loop.vel_lim = (float)(*++itV); pid_z.vel_lim = (float)(*++itV);
         pid_x.pos_loop.err_lim = (float)(*itE); pid_y.pos_loop.err_lim = (float)(*++itE); pid_z.err_lim = (float)(*++itE);
 

@@ -15,7 +15,8 @@
 enum FlightStatus
 {
     FLIGHT_LANDING,
-    FLIGHT_TAKEOFF,
+    FLIGHT_TAKEOFF_BUSY,
+    FLIGHT_TAKEOFF_IDLE,
     FLIGHT_LANDING_REQUEST,
     FLIGHT_TAKEOFF_REQUEST
 }FlightStatus;
@@ -31,7 +32,9 @@ enum CtrlCmd
     PID_Y_VEL   = 0x07,
     PID_Z   	= 0x08,
     LANDING 	= 0x09,
-    TAKEOFF 	= 0x0A
+    TAKEOFF 	= 0x0A,
+    DEST_INC    = 0x0B,
+    DEST_STATIC = 0x0C
 }CtrlCmd;
 
 

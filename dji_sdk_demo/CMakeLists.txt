@@ -47,9 +47,10 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-# )
+ add_message_files(
+   FILES
+   StatusCodeStamped.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -66,10 +67,10 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs  # Or other packages containing msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -105,6 +106,7 @@ catkin_package(
 #  LIBRARIES dji_sdk_demo
 #  CATKIN_DEPENDS dji_sdk roscpp 
 #  DEPENDS dji_sdk
+   CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -149,8 +151,8 @@ target_link_libraries(dji_sdk_client
   ${OpenCV_LIBS}
 )
 add_dependencies(dji_sdk_client 
-	dji_sdk_controller
-	dji_sdk_generate_messages_cpp)
+	dji_sdk_generate_messages_cpp
+	dji_sdk_demo_generate_messages_cpp)
 
 #############
 ## Install ##

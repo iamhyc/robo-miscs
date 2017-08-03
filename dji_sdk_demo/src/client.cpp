@@ -22,20 +22,22 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 
+#include <std_msgs/Int16.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Vector3Stamped.h>
+#include <dji_sdk_demo/StatusCodeStamped.h>
 #include "ctrl_type.h"
 #include "pid_set.h"
 #include "helperfn.hpp"
 
-//#define SIMULATION
-#define INIT_HEIGHT	10//2m from guidance data
+#define SIMULATION
+typedef unsigned short          uint16_t;
 
 //Flight Status Variables
-static CtrlType::Vector3 Start, Expect;
+static CtrlType::Vector3 Start, Expect, Origin;
 static CtrlType::dpid_T pid_x, pid_y;
 static CtrlType::pid_T pid_z, pid_yaw;
 //Flight Status Varialbles
@@ -84,35 +86,6 @@ void velocity_callback(const geometry_msgs::Vector3Stamped& g_vel)
     logToFile(tmp, GUIDANCE_MSG);
 }
 
-/*
-void guidance_callback(const boost::shared_ptr<const geometry_msgs::TwistStamped>& g_pos, \
-                       const boost::shared_ptr<const geometry_msgs::Vector3Stamped>& g_vel)
-{
-    std::stringstream tmp;
-    myassert("hohohohohohohohohohohohohohoho");
-
-    pos.twist.linear.x = *g_pos.twist.linear.x;
-    pos.twist.linear.y = *g_pos.twist.linear.y;
-    pos.twist.linear.z = *g_pos.twist.linear.z;
-
-    pos.twist.angular.x = *g_pos.twist.angular.x;
-    pos.twist.angular.y = *g_pos.twist.angular.y;
-    pos.twist.angular.z = *g_pos.twist.angular.z;
-
-    tmp.str("");
-    genVector3Msg(tmp, "POSE", pos.twist.linear.x, pos.twist.linear.y, pos.twist.linear.z);
-    std::cout << tmp.str() << std::endl;
-    logToFile(tmp, GUIDANCE_MSG);
-
-    tmp.str("");
-    memcpy(&t_vel, &g_vel, sizeof(g_vel));
-    genVector3Msg(tmp, "VEL", *g_vel.vector.x, *g_vel.vector.y, *g_vel.vector.z);
-    std::cout << tmp.str() << std::endl;
-    logToFile(tmp, GUIDANCE_MSG);
-
-}
-*/
-
 
 void console_callback(const dji_sdk_controller::flight_msg& msg)
 {
@@ -122,7 +95,7 @@ void console_callback(const dji_sdk_controller::flight_msg& msg)
     switch(type)
     {
         case LANDING:
-            if(flightStatus==FLIGHT_TAKEOFF)
+            if(flightStatus==FLIGHT_TAKEOFF_IDLE || flightStatus==FLIGHT_TAKEOFF_BUSY)
             {
                 std::cout << "Taking Off Request receive." << std::endl;
                 flightStatus = FLIGHT_LANDING_REQUEST;
@@ -137,7 +110,7 @@ void console_callback(const dji_sdk_controller::flight_msg& msg)
                 tmp << "Landing Request receive.";
             }
         break;
-        case PID_X_POS:
+        /*case PID_X_POS:
             pid_x.pos_loop.kp = msg.data.x; pid_x.pos_loop.ki = msg.data.y; pid_x.pos_loop.kd = msg.data.z;
             genVector3Msg(tmp, "set PID_X", pid_x.pos_loop.kp, pid_x.pos_loop.ki, pid_x.pos_loop.kd);
         break;
@@ -156,16 +129,40 @@ void console_callback(const dji_sdk_controller::flight_msg& msg)
         case PID_Y_VEL:
             pid_y.vel_loop.kp = msg.data.x; pid_y.vel_loop.ki = msg.data.y; pid_y.vel_loop.kd = msg.data.z;
             genVector3Msg(tmp, "set PID_Y", pid_y.vel_loop.kp, pid_y.vel_loop.ki, pid_y.vel_loop.kd);
-        break;
+        break;*/
         case DEST:
-            Expect.x =  msg.data.x + Start.x;
-            Expect.y =  msg.data.y + Start.y;
+            Expect.x =  msg.data.x;
+            Expect.y =  msg.data.y;
 #ifdef SIMULATION
-            Expect.z = msg.data.z + Start.z;       
+            Expect.z = msg.data.z;
 #else
-            Expect.z = -msg.data.z + Start.z;
+            Expect.z = -msg.data.z;
 #endif
+            originTranslation(Expect, Start, false);
             genVector3Msg(tmp, "set Dest.", Expect.x, Expect.y, Expect.z);
+            flightStatus = FLIGHT_TAKEOFF_BUSY;
+        break;
+    case DEST_INC:
+#ifdef SIMULATION
+        Expect.x = msg.data.x + drone->local_position.x;
+        Expect.y = msg.data.y + drone->local_position.y;
+        Expect.z = msg.data.z + drone->local_position.z;
+#else
+        Expect.x = msg.data.x + pos.twist.linear.x;
+        Expect.y = msg.data.y + pos.twist.linear.y;
+        Expect.z = -msg.data.z + pos.twist.linear.z;
+#endif
+        genVector3Msg(tmp, "set Dest. inc", Expect.x, Expect.y, Expect.z);
+        flightStatus = FLIGHT_TAKEOFF_BUSY;
+        break;
+    case DEST_STATIC:
+        Expect.x =  msg.data.x;
+        Expect.y =  msg.data.y;
+        Expect.z = -msg.data.z;
+        originTranslation(Expect, Origin, true);
+        originTranslation(Expect, Start, false);
+        genVector3Msg(tmp, "set Dest. static", Expect.x, Expect.y, Expect.z);
+        flightStatus = FLIGHT_TAKEOFF_BUSY;
         break;
         case VEL_LIM:
             pid_x.pos_loop.vel_lim = msg.data.x; pid_y.pos_loop.vel_lim = msg.data.y; pid_z.vel_lim = msg.data.z;
@@ -183,15 +180,20 @@ void console_callback(const dji_sdk_controller::flight_msg& msg)
 }
 
 
-void fillDroneStatus(std_msgs::String& msg)
+void fillDroneStatus(dji_sdk_demo::StatusCodeStamped& msg)
 {
-    msg.data = "Hello, I am your drone.";
+    msg.header.frame_id = "droneStatus";
+    msg.header.stamp = ros::Time::now();
+    msg.code.data = flightStatus;
 }
 
 void fillTFFrmae(tf::Transform& transform)
 {
     tf::Quaternion q;
-    transform.setOrigin( tf::Vector3((double)pos.twist.linear.x, (double)pos.twist.linear.y, (double)pos.twist.linear.z) );
+    CtrlType::Vector3 vector;
+    vector.x = pos.twist.linear.x; vector.y = pos.twist.linear.y; vector.z = pos.twist.linear.z;
+    originTranslation(vector, Origin, true);
+    transform.setOrigin( tf::Vector3((double)vector.x, (double)vector.y, (double)vector.z) );
     q.setRPY(0, 0, (double)pos.twist.angular.z);
     transform.setRotation(q);
 }
@@ -200,14 +202,14 @@ void dronePublishCb(const ros::TimerEvent& event)
 {
     //ROS_INFO("TIMER TIME!");
 
-    std_msgs::String status_msg;
+    dji_sdk_demo::StatusCodeStamped status_msg;
     geometry_msgs::Vector3 tf_msg;
     tf::Transform transform;
 
     fillDroneStatus(status_msg);
     fillTFFrmae(transform);
 
-    br->sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "drone_name"));
+    br->sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "Adrone"));
     droneStatus_pub->publish(status_msg);
 }
 
@@ -251,7 +253,7 @@ void InitClient(bool resetPID, bool saveLogFiles)
     {
         resetLogFileAll();
     }
-    LoadParamFile(Expect, pid_x, pid_y, pid_z, resetPID);
+    LoadParamFile(Expect, Origin, pid_x, pid_y, pid_z, resetPID);
     sleep(3);
 
 #ifdef SIMULATION
@@ -259,11 +261,9 @@ void InitClient(bool resetPID, bool saveLogFiles)
     Start.y = drone->local_position.y;
     Start.z = drone->local_position.z;
 
-    Expect.x += Start.x;
-    Expect.y += Start.y;
-    Expect.z += Start.z;
+    originTranslation(Expect, Start, false);
 #else
-    myassert("Initializing . . .");
+    myassert("Initializing . . ."); 
     do{
         ros::spinOnce();
         Start.x = pos.twist.linear.x;
@@ -275,9 +275,8 @@ void InitClient(bool resetPID, bool saveLogFiles)
         std::cout << tmp.str() << std::endl;
     }while(Start.x==0 || Start.y==0 || Start.z==0);
 
-    Expect.x += Start.x;
-    Expect.y += Start.y;
-    Expect.z = Start.z - Expect.z;
+    Expect.z = -Expect.z;
+    originTranslation(Expect, Start, false);
 #endif  
 }
 
@@ -292,10 +291,6 @@ int main(int argc, char *argv[])
 	
     ros::Subscriber position_sub = nh.subscribe("/guidance/position", 1, position_callback);
     ros::Subscriber velocity_sub = nh.subscribe("/guidance/velocity", 1, velocity_callback);
-    /*message_filters::Subscriber<geometry_msgs::TwistStamped> position_sub(nh, "/guidance/position", 100);
-    message_filters::Subscriber<geometry_msgs::Vector3Stamped> velocity_sub(nh, "/guidance/velocity", 100);
-    message_filters::TimeSynchronizer<geometry_msgs::TwistStamped, geometry_msgs::Vector3Stamped> sync(position_sub, velocity_sub, 5);
-    sync.registerCallback(boost::bind(&guidance_callback, _1, _2));*/
     /*
     * geometry_msgs/TransformStamped imu, sensor_msgs/LaserScan obstacle_distance
     */
@@ -304,7 +299,7 @@ int main(int argc, char *argv[])
 
     br = new tf::TransformBroadcaster();
     droneStatus_pub = new ros::Publisher();
-    *droneStatus_pub = nh.advertise<std_msgs::String>("/droneStatus", 100);
+    *droneStatus_pub = nh.advertise<dji_sdk_demo::StatusCodeStamped>("/droneStatus", 100);
     auto pub_timer = nh.createTimer(ros::Duration(1/10), &dronePublishCb, false);//@10Hz
 
     //Expect-to-Actual-Error
@@ -328,7 +323,12 @@ int main(int argc, char *argv[])
         std::cout<< "SPECIAL::::" << flightStatus << std::endl;
         switch(flightStatus)
         {
-        case FLIGHT_TAKEOFF:
+        case FLIGHT_TAKEOFF_IDLE:
+            //Hover and clear {integeral, error}
+            //UWB Control
+            myassert("HERE IDLE, YES.");
+            break;
+        case FLIGHT_TAKEOFF_BUSY:
 #ifdef SIMULATION
             dPID_realize(pid_x, x_input, drone->velocity.vx);       pid_x.vel_loop.v = inSRange(pid_x.vel_loop.v, pid_x.pos_loop.vel_lim);
             dPID_realize(pid_y, y_input, drone->velocity.vy);       pid_y.vel_loop.v = inSRange(pid_y.vel_loop.v, pid_y.pos_loop.vel_lim);
@@ -366,10 +366,10 @@ int main(int argc, char *argv[])
             if(abs(pid_x.pos_loop.error)<pid_x.pos_loop.err_lim && abs(pid_y.pos_loop.error)<pid_y.pos_loop.err_lim && abs(pid_z.error)<pid_z.err_lim)
             {
                 ++landing_signal;
-                if(landing_signal > 2000)//800
+                if(landing_signal > 100)
                 {
                     landing_signal = 0;
-                    flightStatus = FLIGHT_LANDING_REQUEST;
+                    flightStatus = FLIGHT_TAKEOFF_IDLE;
                 }
             }
             else
@@ -410,7 +410,7 @@ int main(int argc, char *argv[])
             usleep(10000);
             drone->takeoff();
             sleep(8);
-            flightStatus = FLIGHT_TAKEOFF;
+            flightStatus = FLIGHT_TAKEOFF_BUSY;
             break;
 
         case FLIGHT_LANDING_REQUEST:

@@ -156,7 +156,9 @@ target_link_libraries(dji_sdk_controller
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
 )
-#add_dependencies(dji_sdk_controller dji_sdk_generate_messages_cpp)
+add_dependencies(dji_sdk_controller 
+	dji_sdk_generate_messages_cpp
+	dji_sdk_controller_generate_messages_cpp)
 
 #############
 ## Install ##

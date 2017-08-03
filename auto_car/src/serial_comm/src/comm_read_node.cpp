@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   publisher = nh.advertise<serial_comm::car_speed>("car_info", 100);
 
   autocar::serial_mul::comm_read car_comm_read;
-  ros::Rate loopRate(50);//advertise@100Hz, read from car
+  ros::Rate loopRate(50);//
 
   //set up the serial
   bool sucess = car_comm_read.comm_read::read_setup();
