@@ -1,0 +1,44 @@
+1.以50Hz接收小车串口信息，100Hz发布控制信息
+  publish：/car_info
+  subscribe：/armor_detect/armor_Info, /move_base/cmd_vel
+
+2.ROS接收数据结构
+typedef struct
+{
+  uint8_t sof;//(MPU6050 data?)
+  int16_t angle;//姿态角度（相对坐标系？）
+  int16_t v_w;//角速度
+  int16_t v_x;//前进方向速度
+  int16_t v_y;//左右平移速度
+
+
+  uint8_t flag;//(UWB data format)
+  uint32_t x;//(UWB data format)
+  uint32_t y;//(UWB data format)
+  uint32_t z;//(UWB data format)
+  uint32_t compass;//(UWB data format)
+  uint8_t data_status;//(UWB data format)
+
+  float pan_title_yaw;//云台_yaw(z-axis)
+  float pan_title_pitch;//云台_pitch(x-axis)
+  uint8_t end;//fixed: 0xFE
+}__attribute__((packed)) data_t;
+
+3.ROS控制数据结构
+typedef struct
+{
+    uint8_t sof;//0xA5
+    uint8_t myinfo;//???
+    int16_t auto_vx;//move_base->cmd_vel::vel_data.linear.x
+    int16_t auto_vy;//move_base->cmd_vel::vel_data.linear.x
+    int16_t auto_vw;//move_base->cmd_vel::vel_data.angular.z
+    uint8_t vision_data_status;//敌方检测, 1 for yes, 0 for no
+    int16_t vision_data_x;//enemy coordination x
+    int16_t vision_data_y;//enemy coordination y
+    int16_t vision_data_d;//enemy angle direction
+    uint8_t end;//0xFE
+
+}__attribute__((packed)) data_t;
+
+
+

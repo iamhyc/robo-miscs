@@ -1,0 +1,8 @@
+prefix=/home/leory/shit_ws/install
+
+Name: tags_detection
+Description: Description of tags_detection
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/leory/shit_ws/install/lib 
+Requires: 

@@ -1,0 +1,7 @@
+这个库用于发布固定的lidar相对base_link的相对坐标，即激光雷达在小车上的安装位置
+
+tf_param：似乎没有用到，里面似乎没有逻辑，只是cv::FileNode，root["tf_mul"]搞不清楚
+
+tf_factory写死这个相对距离，tf_broadcaster负责发布它
+
+

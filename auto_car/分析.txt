@@ -1,0 +1,47 @@
+1.如何在一个普通的集显电脑上装上环境：
+  首先是依赖问题，据测试主要来自OpenCV，CUDA，Caffe；前两个安装包可以来我这里拷，实际上装JetPack的时候也会有这些包，环境变量也会自行配好；Caffe的安装请自行百度。
+简介如下：
+	（1）安装OpenCV 2.4.×/3.3.×：
+		【1】依赖：sudo apt-get install build-essential cmake git libgtk2.0-dev pkg-config  libavcodec-dev libavformat-dev libswscale-dev
+		【2】创建build目录：cd ~/opencv && mkdir build && cd build
+		【3】cmake配置：cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -D CUDA_USE_STATIC_CUDA_RUNTIME=OFF ..
+			（注意此处必须设置CUDA为static，否则请参考下面第四条）
+		【4】make -j7 && sudo make install
+	（2）安装CUDA：(可能需要在OpenCV前安装:)，应该是)
+		直接安装deb包，注意查看环境变量如下：(zsh+kinect，仅供参考)
+			source /opt/ros/kinetic/setup.zsh
+			export LD_LIBRARY_PATH=/usr/local/cuda:/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+			export PATH=/usr/locat/cuda:/usr/local/cuda-8.0/bin:$PATH
+	（3）安装Caffe
+		【1】 依赖：sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libhdf5-serial-dev protobuf-compiler libopencv-dev（其中libopencv-dev可以不装，因为要手动装OpenCV）
+		sudo apt-get install --no-install-recommends libboost-all-dev
+		【2】cp Makefile.config.example Makefile.config
+			并修改内容：CPU_ONLY := 1设置为GPU无关，使用OpenCV3的请取消掉`OPENCV_VERSION := 3`前的注释（但是推荐OpenCV2,v3动态库似乎有兼容问题）；Include和Library目录两行修改为如下所示：
+		INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial
+		LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/hdf5/serial
+		【3】推荐使用cmake方法编译：
+			mkdir build && cd build && cmake .. && make all && make install && make runtest
+			（runtest这里fail的话无所谓，因为会跪在CUDA那里:)，可能是显卡问题）
+		【4】编译完成后，请“caffe源码目录下”执行如下步骤生成特定头文件（也就是说这个目录也是caffe的安装目录）：
+			protoc src/caffe/proto/caffe.proto --cpp_out=.
+			mkdir include/caffe/proto
+			mv src/caffe/proto/caffe.pb.h include/caffe/proto
+	（4）auto_car的catkin_make过程：
+		【1】请根据catkin报错信息自行apt安装：ros-<distro>-<pkg_name>
+			
+		【2】如果有些RM的库没有头文件：官方的一些头文件放在了<workspace>/devel/include下，请注意复制完整；
+		【3】-l链接错误，请参考OpenCV的cmake设置；
+			如果错过了，请在src/logical_core，tf_tree文件夹的CMakeLists.txt中添加：set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
+		【4】如果缺少caffe/proto/caffe.pb.h，参考caffe安装步骤最后一条；
+		【5】如还有其它问题，请联系我：）（或者百度解决更快，编译可是很耗时间的～）
+以上参考资料：(只写了有用的)
+http://www.cnblogs.com/xuanxufeng/p/6150593.html
+http://www.cnblogs.com/darkknightzh/p/5638117.html
+https://github.com/opencv/opencv/issues/6542
+https://github.com/muupan/dqn-in-the-caffe/issues/3
+
+2.源码分析
+
+
+P.S. 一些坑：
+	（1）apt-get update时请注意完整无错误，否则会导致意料之外的依赖问题；阿里云或者网易云的源切换请勿混用，似乎HK的源是最好的

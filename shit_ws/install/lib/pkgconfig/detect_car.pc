@@ -1,0 +1,8 @@
+prefix=/home/leory/shit_ws/install
+
+Name: detect_car
+Description: Description of detect_car
+Version: 0.1.9
+Cflags: -I/home/leory/shit_ws/install/include
+Libs: -L/home/leory/shit_ws/install/lib 
+Requires: message_runtime
